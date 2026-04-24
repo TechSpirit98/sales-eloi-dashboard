@@ -1,0 +1,3002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Review — Semaine 21–25 avril 2026</title>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #4361ee;
+    --green: #06d6a0;
+    --orange: #f77f00;
+    --red: #ef233c;
+    --yellow: #ffd60a;
+    --bg: #f0f2f8;
+    --card: #fff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-left h1 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .header-left .meta {
+    color: rgba(255,255,255,0.55);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .header-tabs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .tab-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(67,97,238,0.4);
+  }
+
+  .header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-duo {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .badge-user {
+    background: rgba(67,97,238,0.3);
+    color: #a5b4fc;
+    border: 1px solid rgba(67,97,238,0.4);
+  }
+
+  /* ── LAYOUT ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  section { margin-bottom: 32px; }
+
+  /* ── KPI CARDS ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-top: 4px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card.red   { border-top-color: var(--red); }
+  .kpi-card.orange{ border-top-color: var(--orange); }
+  .kpi-card.gray  { border-top-color: var(--muted); }
+  .kpi-card.green { border-top-color: var(--green); }
+  .kpi-card.accent{ border-top-color: var(--accent); }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 28px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar-wrap {
+    background: #edf0f7;
+    border-radius: 8px;
+    height: 26px;
+    display: flex;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-segment {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    transition: width 0.5s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 4px;
+  }
+
+  .progress-segment.known  { background: var(--red); }
+  .progress-segment.est    { background: var(--orange); }
+  .progress-segment.gap    { background: #cbd5e1; color: var(--muted); }
+
+  .progress-legend {
+    display: flex;
+    gap: 18px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: #f8fafc;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafbff; }
+
+  /* ── STAGE BADGES ── */
+  .stage-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .stage-discovery { background: #dbeafe; color: #1d4ed8; }
+  .stage-solution  { background: #d1fae5; color: #065f46; }
+  .stage-proposal  { background: #fef9c3; color: #92400e; }
+  .stage-negotiation { background: #ffedd5; color: #9a3412; }
+
+  /* ── STATUS BADGES ── */
+  .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .status-sql  { background: #d1fae5; color: #065f46; }
+  .status-mql  { background: #dbeafe; color: #1d4ed8; }
+  .status-open { background: #e0e7ff; color: #3730a3; }
+  .status-inprog { background: #fff7ed; color: #c2410c; }
+  .status-nvp  { background: #fef2f2; color: #991b1b; }
+
+  /* ── DATE COLORS ── */
+  .date-far  { color: #1d4ed8; }
+  .date-warn { color: var(--orange); font-weight: 700; }
+  .date-urgent { color: var(--red); font-weight: 700; }
+
+  /* ── DERNIÈRE TOUCHE ── */
+  .touch {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .touch.ok     { background: #d1fae5; color: #065f46; }
+  .touch.warn   { background: #fef3c7; color: #92400e; }
+  .touch.late   { background: #ffedd5; color: #9a3412; }
+  .touch.urgent { background: #fef2f2; color: #991b1b; }
+  .touch.today  { background: #fef9c3; color: #78350f; border: 1px solid #fcd34d; }
+
+  /* ── TRIAL SECTION ── */
+  .trial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .trial-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    padding: 18px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .trial-card.urgent { border-top-color: var(--red); }
+  .trial-card.active { border-top-color: var(--green); }
+  .trial-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .trial-name { font-size: 15px; font-weight: 700; }
+  .trial-company { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .trial-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .trial-tag.running    { background: #d1fae5; color: #065f46; }
+  .trial-tag.urgent     { background: #fef2f2; color: #991b1b; }
+  .trial-tag.holaspirit { background: #f3e8ff; color: #6b21a8; }
+  .trial-card.hola { border-top-color: #7c3aed; }
+  .trial-grid-header {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 0 6px 4px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .trial-grid-header.ts   { color: var(--accent); }
+  .trial-grid-header.hola { color: #7c3aed; }
+  .hola-metrics { display: flex; gap: 16px; margin-top: 10px; margin-bottom: 6px; }
+  .hola-metric {
+    flex: 1;
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .hola-metric.active { background: #ede9fe; border-color: #c4b5fd; }
+  .hola-metric .hm-val { font-size: 24px; font-weight: 800; color: #6d28d9; }
+  .hola-metric .hm-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  .deal-pipeline-link { font-size: 11px; font-weight: 600; color: #7c3aed; background: #f3e8ff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+  .hola-score-block { display: flex; align-items: center; gap: 12px; margin: 10px 0 6px; padding: 10px 14px; background: #f3e8ff; border-radius: 8px; border: 1px solid #e9d5ff; }
+  .hola-score-val { font-size: 26px; font-weight: 800; color: #6d28d9; min-width: 40px; text-align: center; }
+  .hola-score-info .hola-stage-label { font-size: 13px; font-weight: 700; color: #5b21b6; }
+  .hola-score-info .hola-stage-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .trial-rows { display: flex; flex-direction: column; gap: 6px; }
+  .trial-row { display: flex; gap: 10px; font-size: 12px; }
+  .trial-key { color: var(--muted); font-weight: 600; min-width: 140px; }
+  .trial-val { color: var(--text); }
+  .trial-alert {
+    margin-top: 12px;
+    background: #fef9c3;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: #78350f;
+    font-weight: 600;
+  }
+  .trial-alert.red { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+  .sheet-link {
+    background: #f0f4ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #3730a3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .sheet-link a { color: #4361ee; font-weight: 700; text-decoration: none; }
+  .sheet-link a:hover { text-decoration: underline; }
+
+  /* Live data indicators */
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 3px 9px;
+    border-radius: 20px; margin-left: 10px;
+  }
+  .live-badge.live-ok   { background: #d1fae5; color: #065f46; }
+  .live-badge.live-wait { background: #fef3c7; color: #92400e; }
+  .live-badge.live-err  { background: #fef2f2; color: #991b1b; }
+  .live-badge.live-init { background: #f1f5f9; color: #64748b; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .live-dot.pulsing { animation: pulse 1.2s infinite; }
+
+  .live-login {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .live-login.ll-ok     { background: #d1fae5; color: #065f46; }
+  .live-login.ll-warn   { background: #fef3c7; color: #92400e; }
+  .live-login.ll-danger { background: #fef2f2; color: #991b1b; }
+  .live-login.ll-never  { background: #f1f5f9; color: #64748b; }
+  .live-login.ll-load   { color: #94a3b8; font-style: italic; }
+
+  /* Setup banner */
+  .setup-banner {
+    background: linear-gradient(135deg, #4361ee15, #4361ee08);
+    border: 1px solid #4361ee40; border-radius: 8px;
+    padding: 14px 18px; margin-top: 12px;
+    font-size: 12px; color: var(--text);
+  }
+  .setup-banner strong { color: #4361ee; }
+  .setup-banner code {
+    background: #1e293b10; padding: 1px 5px; border-radius: 3px;
+    font-size: 11px; font-family: monospace;
+  }
+
+  /* ── TOUR DE CONTRÔLE — Impact Delivery ── */
+  .trial-engagement {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+  .eng-header-row {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .eng-score {
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800;
+  }
+  .eng-score.dormant  { background:#fef2f2; color:#991b1b; }
+  .eng-score.explorer { background:#fef3c7; color:#92400e; }
+  .eng-score.actif    { background:#d1fae5; color:#065f46; }
+  .eng-score.engage   { background:#dbeafe; color:#1e40af; }
+  .eng-score.champion { background:#f3e8ff; color:#7e22ce; }
+  .eng-stage     { font-size: 13px; font-weight: 700; }
+  .eng-stage-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .impact-label  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 6px; }
+
+  .activity-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-bottom: 14px;
+  }
+  .activity-metric {
+    background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 4px; text-align: center;
+  }
+  .activity-metric .am-icon  { font-size: 13px; display: block; }
+  .activity-metric .am-value { font-size: 20px; font-weight: 800; display: block; margin: 2px 0; }
+  .activity-metric .am-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: .4px; }
+  .activity-metric.am-hot  { border-color: #06d6a0; background: #f0fdf4; }
+  .activity-metric.am-cold { border-color: #fca5a5; background: #fef2f2; }
+
+  .contact-timeline {
+    position: relative; display: flex; align-items: flex-start;
+    justify-content: space-between; margin: 4px 0 14px; padding: 0 4px;
+  }
+  .contact-timeline::before {
+    content: ''; position: absolute; top: 13px; left: 14px; right: 14px;
+    height: 2px; background: var(--border); z-index: 0;
+  }
+  .tl-point {
+    position: relative; z-index: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; flex: 1;
+  }
+  .tl-dot {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border);
+    background: white; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+  .tl-dot.tl-done   { background:#06d6a0; border-color:#06d6a0; color:white; }
+  .tl-dot.tl-next   { background:#4361ee; border-color:#4361ee; color:white; animation: pulse-tl 1.5s infinite; }
+  .tl-dot.tl-soon   { background:#f77f00; border-color:#f77f00; color:white; }
+  .tl-dot.tl-future { background:#f1f5f9; border-color:#cbd5e1; color:#94a3b8; }
+  @keyframes pulse-tl { 0%,100%{box-shadow:0 0 0 0 #4361ee50} 50%{box-shadow:0 0 0 5px transparent} }
+  .tl-label { font-size: 10px; font-weight: 700; color: var(--muted); text-align: center; }
+  .tl-date  { font-size: 10px; color: var(--muted); text-align: center; }
+
+  .recommended-action {
+    background: linear-gradient(135deg, #4361ee08, #4361ee14);
+    border: 1px solid #4361ee30; border-radius: 8px; padding: 12px 14px;
+  }
+  .ra-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ra-title  { font-size: 12px; font-weight: 700; color: #4361ee; }
+  .ra-date   { font-size: 11px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .ra-message {
+    font-size: 12px; line-height: 1.6; color: var(--text);
+    background: white; border: 1px solid #4361ee20;
+    border-radius: 6px; padding: 10px 12px; font-style: italic;
+  }
+  .ra-message b { color: #4361ee; font-style: normal; }
+  .eng-nodata { color: var(--muted); font-size: 12px; font-style: italic; padding: 6px 0; }
+
+  /* ── RIGHT BOWTIE — Revenus Récurrents ── */
+  .bowtie-section {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0;
+  }
+  .bowtie-half {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .bowtie-half.left-side  { border-top: 3px solid var(--accent); }
+  .bowtie-half.right-side { border-top: 3px solid var(--green); }
+  .bowtie-half-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--muted); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bowtie-tag {
+    padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
+  }
+  .bowtie-tag.left  { background: #e0e7ff; color: #3730a3; }
+  .bowtie-tag.right { background: #d1fae5; color: #065f46; }
+
+  .mrr-waterfall { display: flex; flex-direction: column; gap: 8px; }
+  .mrr-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; border-radius: 6px; font-size: 13px;
+  }
+  .mrr-row.new-mrr   { background: #e0f2fe; }
+  .mrr-row.exp-mrr   { background: #d1fae5; }
+  .mrr-row.churn-mrr { background: #fef2f2; }
+  .mrr-row.net-mrr   { background: #f0f4ff; border: 1px solid #4361ee30; }
+  .mrr-row.net-mrr .mrr-val { font-size: 18px; font-weight: 800; color: #4361ee; }
+  .mrr-label { font-weight: 600; font-size: 12px; }
+  .mrr-val   { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .mrr-val.pos { color: #065f46; }
+  .mrr-val.neg { color: #991b1b; }
+  .mrr-divider { border: none; border-top: 1px dashed var(--border); margin: 4px 0; }
+
+  .nrr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .nrr-card {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; text-align: center;
+  }
+  .nrr-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .5px; }
+  .nrr-value { font-size: 22px; font-weight: 800; margin: 4px 0; }
+  .nrr-sub   { font-size: 10px; color: var(--muted); }
+  .nrr-card.nrr-good { border-color: #06d6a0; }
+  .nrr-card.nrr-warn { border-color: #f77f00; }
+  .nrr-card.nrr-bad  { border-color: #ef233c; }
+
+  .right-bowtie-items { display: flex; flex-direction: column; gap: 8px; }
+  .rbi-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; background: #f8fafc;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 12px;
+  }
+  .rbi-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .rbi-name { font-weight: 700; font-size: 12px; }
+  .rbi-detail { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .rbi-badge {
+    margin-left: auto; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; white-space: nowrap;
+  }
+  .rbi-badge.good { background: #d1fae5; color: #065f46; }
+  .rbi-badge.warn { background: #fef3c7; color: #92400e; }
+  .rbi-badge.bad  { background: #fef2f2; color: #991b1b; }
+
+  /* ── HEALTH CARDS ── */
+  .health-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .health-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .health-card .h-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .health-card .h-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #78350f;
+    margin-top: 8px;
+  }
+
+  /* ── INSIGHT CARD ── */
+  .insight-card {
+    background: #f0f9ff;
+    border: 1.5px solid #bae6fd;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #0c4a6e;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  .insight-card.green-bg {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #14532d;
+  }
+
+  /* ── SWEET SPOT ROW ── */
+  .sweet-spot { background: #fff7ed; }
+  .cible-row  { background: #f0fdf4; }
+  .sweet-spot td, .cible-row td { font-weight: 600; }
+
+  /* ── SCENARIO CARDS ── */
+  .scenario-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .scenario-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border: 2px solid var(--border);
+  }
+
+  .scenario-card.orange-outline { border-color: var(--orange); }
+  .scenario-card.green-outline  { border-color: var(--green); background: #f0fdf4; }
+  .scenario-card.blue-outline   { border-color: var(--accent); }
+
+  .scenario-title {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .scenario-row-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 12px;
+  }
+
+  .scenario-row-item:last-of-type { border-bottom: none; }
+
+  .scenario-row-item .sc-label { color: var(--muted); }
+  .scenario-row-item .sc-val   { font-weight: 700; color: var(--text); }
+
+  .scenario-verdict {
+    margin-top: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f8fafc;
+    color: var(--text);
+  }
+
+  /* ── FUNNEL ── */
+  .funnel-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 16px;
+  }
+
+  .funnel-stages {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .funnel-stage {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .funnel-stage-label {
+    width: 160px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .funnel-bar-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .funnel-bar {
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    transition: width 0.5s ease;
+    min-width: 40px;
+    white-space: nowrap;
+  }
+
+  .funnel-pct {
+    font-size: 12px;
+    color: var(--muted);
+    width: 40px;
+  }
+
+  .funnel-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .funnel-stat {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  .funnel-stat .fs-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .funnel-stat .fs-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── SOURCE CARDS ── */
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .source-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-top: 4px solid var(--accent);
+  }
+
+  .source-card.src-green  { border-top-color: var(--green); }
+  .source-card.src-yellow { border-top-color: var(--yellow); }
+  .source-card.src-orange { border-top-color: var(--orange); }
+  .source-card.src-muted  { border-top-color: var(--muted); }
+
+  .source-card .src-title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .source-card .src-count {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .source-card .src-leads {
+    font-size: 11px;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  .source-card .src-arr {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .source-card .src-note {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 4px 8px;
+    background: #eff6ff;
+    border-radius: 6px;
+    margin-top: 4px;
+  }
+
+  /* ── ARR POTENTIAL INDICATORS ── */
+  .arr-high  { color: #065f46; font-weight: 700; }
+  .arr-mid   { color: #92400e; font-weight: 600; }
+  .arr-low   { color: var(--red); font-size: 11px; }
+
+  /* ── EMOJI ICON HELPER ── */
+  .icon { margin-right: 4px; }
+
+  /* ── NEXT STEP ── */
+  .next-step-row td {
+    padding: 0 12px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .ns-box {
+    background: #f0f4ff;
+    border: 1px solid #c7d2fe;
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.55;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .ns-box.ns-urgent {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    border-left-color: var(--red);
+  }
+  .ns-box.ns-ok {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    border-left-color: var(--green);
+  }
+  .ns-label {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--accent); white-space: nowrap;
+    margin-top: 2px; flex-shrink: 0;
+  }
+  .ns-label.urgent { color: var(--red); }
+  .ns-label.ok     { color: #059669; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .scenario-row { grid-template-columns: 1fr; }
+    .source-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ── DÉCISIONNAIRE BADGE ── */
+  .dm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+  .dm-yes     { background: #d1fae5; color: #065f46; }
+  .dm-no      { background: #fef2f2; color: #991b1b; }
+  .dm-partial { background: #fef9c3; color: #78350f; }
+  .dm-unknown { background: #f1f5f9; color: #475569; }
+
+  /* ── SPICED TAB ── */
+  .spiced-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1100px) { .spiced-grid { grid-template-columns: 1fr; } }
+
+  .spiced-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+  .spiced-card-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .spiced-deal-name { font-size: 14px; font-weight: 700; }
+  .spiced-contact   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .spiced-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .score-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .score-high   { background: #d1fae5; color: #065f46; }
+  .score-mid    { background: #fef9c3; color: #78350f; }
+  .score-low    { background: #fef2f2; color: #991b1b; }
+  .spiced-dm-row {
+    padding: 10px 18px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .spiced-dm-label { font-weight: 700; color: var(--text); min-width: 120px; }
+  .spiced-table-wrap { padding: 12px 18px; }
+  .spiced-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .spiced-table tr { border-bottom: 1px solid #f1f5f9; }
+  .spiced-table tr:last-child { border-bottom: none; }
+  .spiced-table td { padding: 7px 6px; vertical-align: top; }
+  .spiced-key {
+    font-weight: 800;
+    font-size: 11px;
+    width: 28px;
+    text-align: center;
+    border-radius: 4px;
+    padding: 2px 4px;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .sk-s { background: #6366f1; }
+  .sk-p { background: #ef4444; }
+  .sk-i { background: #f97316; }
+  .sk-c { background: #eab308; color: #1e293b; }
+  .sk-e { background: #22c55e; }
+  .sk-d { background: #0ea5e9; }
+  .spiced-dim-name { color: var(--muted); font-weight: 600; width: 80px; padding-left: 6px; }
+  .spiced-val { color: var(--text); line-height: 1.4; }
+  .spiced-val.filled   { }
+  .spiced-val.partial  { color: #92400e; }
+  .spiced-val.missing  { color: #94a3b8; font-style: italic; }
+  .spiced-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    flex-shrink: 0;
+  }
+  .dot-ok      { background: #22c55e; }
+  .dot-partial { background: #eab308; }
+  .dot-missing { background: #e2e8f0; }
+  .spiced-questions {
+    padding: 10px 18px 14px;
+    border-top: 1px solid var(--border);
+    background: #fafbff;
+  }
+  .spiced-q-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
+  .spiced-q-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .spiced-q-list li { font-size: 11.5px; color: #475569; display: flex; align-items: flex-start; gap: 6px; }
+  .spiced-q-list li::before { content: "→"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+  /* ── CONVERSION RATES (CR WBD) ── */
+  .cr-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .cr-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden;
+  }
+  .cr-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .cr-card.cr-blue::before   { background: var(--accent); }
+  .cr-card.cr-green::before  { background: var(--green); }
+  .cr-card.cr-orange::before { background: var(--orange); }
+  .cr-card.cr-purple::before { background: #8b5cf6; }
+  .cr-id {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: 4px;
+  }
+  .cr-label { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px; line-height: 1.3; }
+  .cr-value { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+  .cr-formula { font-size: 10px; color: var(--muted); margin-top: 6px; font-style: italic; }
+  .cr-status {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; margin-top: 6px;
+    padding: 2px 7px; border-radius: 10px;
+  }
+  .cr-status.good   { background: #d1fae5; color: #065f46; }
+  .cr-status.warn   { background: #fef3c7; color: #92400e; }
+  .cr-status.tbd    { background: #f1f5f9; color: #64748b; }
+
+  .cr-benchmark {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: var(--muted);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .cr-benchmark strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════ HEADER ══════════════╗ -->
+<header class="header">
+  <div class="header-left">
+    <h1>Sales Review — Semaine 21–25 avril 2026</h1>
+    <div class="meta">24/04/2026 &middot; Eloi Lefebvre &middot; HubSpot EU1 + Gmail</div>
+  </div>
+  <div class="header-tabs">
+    <button class="tab-btn active" onclick="switchTab('forecast')">&#128200; Forecast</button>
+    <button class="tab-btn" onclick="switchTab('pipeline')">&#128203; Pipeline</button>
+    <button class="tab-btn" onclick="switchTab('leads')">&#127919; Leads &amp; Funnel</button>
+    <button class="tab-btn" onclick="switchTab('spiced')">&#128269; SPICED</button>
+  </div>
+  <div class="header-right">
+    <span class="badge badge-duo">Philippe &times; Eloi</span>
+    <span class="badge badge-user">Eloi Lefebvre &mdash; AE + AM</span>
+  </div>
+</header>
+
+<!-- ╔══════════════ TAB 1 : FORECAST ══════════════╗ -->
+<div id="tab-forecast" class="tab-content active">
+  <div class="container">
+
+    <!-- ── A. KPI ROW ── -->
+    <section>
+      <div class="section-title">
+        A &mdash; Vue synthétique Q2
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-card red">
+          <div class="kpi-label">Objectif MRR mensuel</div>
+          <div class="kpi-value">&euro;4 000 MRR</div>
+          <div class="kpi-sub">&euro;48 000 ARR/an &mdash; nouveaux logos</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-label">Forecast Q2 pondéré</div>
+          <div class="kpi-value">&euro;370 connu</div>
+          <div class="kpi-sub">Connu&nbsp;: &euro;370 &middot; Estimé&nbsp;: ~&euro;4 570 ARR</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Gap Q2</div>
+          <div class="kpi-value">-&euro;7 430 ARR</div>
+          <div class="kpi-sub">à -&euro;11 630 ARR &middot; Cible Q2 : &euro;12 000 ARR</div>
+        </div>
+        <div class="kpi-card gray">
+          <div class="kpi-label">Coverage Ratio</div>
+          <div class="kpi-value">7,5%</div>
+          <div class="kpi-sub">Pipeline connu &euro;2 700 / &euro;36 000 requis &middot; Seuil sain&nbsp;: 3&times;</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-card">
+        <div class="progress-label">
+          <span><strong>Couverture Q2</strong> : ~38% estimé &mdash; Cible &euro;12 000 ARR</span>
+          <span style="font-size:11px;color:var(--muted)">Pondéré connu &euro;370 + Estimé &euro;4 200 = ~&euro;4 570</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-segment known"  style="width:3.1%">&#8203;</div>
+          <div class="progress-segment est"    style="width:35%">&euro;4 200 est.</div>
+          <div class="progress-segment gap"    style="width:61.9%">Gap ~&euro;7 430</div>
+        </div>
+        <div class="progress-legend">
+          <span><span class="legend-dot" style="background:var(--red)"></span>Connu pondéré &euro;370 (3%)</span>
+          <span><span class="legend-dot" style="background:var(--orange)"></span>Estimé additionnel &euro;4 200 (35%)</span>
+          <span><span class="legend-dot" style="background:#cbd5e1"></span>Gap restant (62%)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── F. RIGHT BOWTIE — Revenus Récurrents ── -->
+    <section>
+      <div class="section-title">
+        F &mdash; Right Bowtie — Revenus Récurrents
+        <span class="subtitle">Rétention + Expansion · WBD : "2 moteurs de croissance sur 3 sont post-commit"</span>
+      </div>
+
+      <div class="bowtie-section">
+
+        <!-- Côté gauche — rappel acquisition -->
+        <div class="bowtie-half left-side">
+          <div class="bowtie-half-title">
+            <span class="bowtie-tag left">LEFT BOWTIE</span>
+            Acquisition — New MRR
+          </div>
+          <div class="mrr-waterfall">
+            <div class="mrr-row new-mrr">
+              <span class="mrr-label">🆕 New MRR (nouveaux logos)</span>
+              <span class="mrr-val pos">+0 €</span>
+            </div>
+            <div class="mrr-row new-mrr">
+              <span class="mrr-label">🎯 Objectif mensuel</span>
+              <span class="mrr-val">4 000 €</span>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.6">
+              Deals actifs pipeline : <strong>370 €</strong> MRR engagé ce trimestre.<br>
+              Weighted forecast : <strong>~1 800 €</strong> MRR probable Q2.<br>
+              <span style="color:var(--orange);font-weight:600">→ Gap vs objectif Q2 : ~10 200 € MRR</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Côté droit — rétention + expansion -->
+        <div class="bowtie-half right-side">
+          <div class="bowtie-half-title">
+            <span class="bowtie-tag right">RIGHT BOWTIE</span>
+            Rétention + Expansion — MRR Waterfall
+          </div>
+          <div class="mrr-waterfall">
+            <div class="mrr-row exp-mrr">
+              <span class="mrr-label">📈 Expansion MRR (AM pipeline)</span>
+              <span class="mrr-val pos">+TBD €</span>
+            </div>
+            <div class="mrr-row churn-mrr">
+              <span class="mrr-label">📉 Churn MRR (pertes)</span>
+              <span class="mrr-val neg">−TBD €</span>
+            </div>
+            <hr class="mrr-divider">
+            <div class="mrr-row net-mrr">
+              <span class="mrr-label">⚡ Net MRR Movement</span>
+              <span class="mrr-val">À compléter</span>
+            </div>
+          </div>
+          <div class="nrr-grid">
+            <div class="nrr-card nrr-warn">
+              <div class="nrr-label">GRR</div>
+              <div class="nrr-value">TBD%</div>
+              <div class="nrr-sub">Gross Revenue Retention<br>Cible &gt;90%</div>
+            </div>
+            <div class="nrr-card nrr-warn">
+              <div class="nrr-label">NRR</div>
+              <div class="nrr-value">TBD%</div>
+              <div class="nrr-sub">Net Revenue Retention<br>Cible &gt;100%</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Clients à risque / signaux expansion -->
+      <div style="margin-top:16px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px">Signaux Right Bowtie — Clients actifs</div>
+        <div class="right-bowtie-items">
+          <div class="rbi-item">
+            <div class="rbi-icon">🔄</div>
+            <div>
+              <div class="rbi-name">Renouvellements en cours</div>
+              <div class="rbi-detail">Deals Renewal Pipeline actifs — voir section ci-dessous</div>
+            </div>
+            <span class="rbi-badge warn">À suivre</span>
+          </div>
+          <div class="rbi-item">
+            <div class="rbi-icon">📊</div>
+            <div>
+              <div class="rbi-name">Expansion opportunities (AM Pipeline)</div>
+              <div class="rbi-detail">Upsell + cross-sell sur base installée — voir section B ci-dessus</div>
+            </div>
+            <span class="rbi-badge good">Actif</span>
+          </div>
+          <div class="rbi-item">
+            <div class="rbi-icon">⚠️</div>
+            <div>
+              <div class="rbi-name">Reselling risk — Champions qui partent</div>
+              <div class="rbi-detail">WBD : "when your Champion leaves, resell the new person immediately or face churn risk"</div>
+            </div>
+            <span class="rbi-badge bad">Non tracké</span>
+          </div>
+          <div class="rbi-item">
+            <div class="rbi-icon">🔁</div>
+            <div>
+              <div class="rbi-name">Closed loops — Referrals &amp; Advocacy</div>
+              <div class="rbi-detail">WBD : "customers mention your brand earlier than expected — track these signals"</div>
+            </div>
+            <span class="rbi-badge bad">Non tracké</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding:10px 14px;background:#f0f4ff;border:1px solid #4361ee20;border-radius:6px;font-size:11px;color:var(--muted)">
+        💡 <strong>WBD Bowtie :</strong> NRR &gt; 100% = expansion &gt; churn = croissance organique sans nouveaux clients. C'est le signal le plus puissant de product-market fit récurrent. Renseigner GRR et NRR avec Philippe à chaque Sales Review.
+      </div>
+    </section>
+
+    <!-- ── B. FORECAST MENSUEL ── -->
+    <section>
+      <div class="section-title">B &mdash; Forecast par mois de clôture</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mois</th>
+              <th>Deals attendus</th>
+              <th>ARR estimé (bas–haut)</th>
+              <th>ARR pondéré</th>
+              <th>Equiv. MRR</th>
+              <th>vs Obj. mensuel</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Avril 2026</strong></td>
+              <td style="color:var(--muted)">Aucun</td>
+              <td>&euro;0</td>
+              <td>&euro;0</td>
+              <td>&euro;0 MRR</td>
+              <td style="color:var(--red);font-weight:700">&#10060; -&euro;4 000 MRR</td>
+              <td>Pas de deal à closing ce mois</td>
+            </tr>
+            <tr>
+              <td><strong>Mai 2026</strong></td>
+              <td>Mairie de Veigy-Foncenex</td>
+              <td>&euro;3 000 – &euro;8 000</td>
+              <td>~&euro;3 600</td>
+              <td>~&euro;300 MRR</td>
+              <td style="color:var(--orange);font-weight:700">&#128992; -&euro;3 700 MRR</td>
+              <td>Relancer Cédric avant 30/04 &#8599;</td>
+            </tr>
+            <tr>
+              <td><strong>Juin 2026</strong></td>
+              <td>FortSchritt + Rhône Digital + Cetusia (si conv.)</td>
+              <td>&euro;4 200 – &euro;10 000</td>
+              <td>~&euro;1 570</td>
+              <td>~&euro;131 MRR</td>
+              <td style="color:var(--red);font-weight:700">&#128308; -&euro;3 869 MRR</td>
+              <td>Avancer FortSchritt en Solution Fit &#8599;</td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td><strong style="color:var(--muted)">Juil. 2026 (Q3)</strong></td>
+              <td>UTBM &mdash; ArcInnoLab</td>
+              <td>&euro;8 000 – &euro;20 000</td>
+              <td>~&euro;2 800</td>
+              <td>~&euro;233 MRR</td>
+              <td style="color:var(--muted)">Hors Q2</td>
+              <td>Accélérer &mdash; demander le brief UTBM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        Estimations basées sur la taille connue des comptes. Montants réels à confirmer dans HubSpot.
+      </div>
+    </section>
+
+    <!-- ── C. MODÈLE DEAL ── -->
+    <section>
+      <div class="section-title">C &mdash; Modèle : qualité de deal vs objectif</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Taille compte</th>
+              <th>ARR moyen</th>
+              <th>MRR equiv.</th>
+              <th>Deals/mois requis</th>
+              <th>Leads/mois requis (15% conv.)</th>
+              <th>Faisabilité</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>10–25 users</td>
+              <td>~&euro;2 000 ARR</td>
+              <td>~&euro;167 MRR</td>
+              <td>24 deals &#10060;</td>
+              <td>~160 leads</td>
+              <td style="color:var(--red)">&#10060; Inatteignable</td>
+            </tr>
+            <tr>
+              <td>25–50 users</td>
+              <td>~&euro;5 000 ARR</td>
+              <td>~&euro;417 MRR</td>
+              <td>10 deals &#10060;</td>
+              <td>~67 leads</td>
+              <td style="color:var(--orange)">&#10060; Difficile</td>
+            </tr>
+            <tr class="sweet-spot">
+              <td><strong>50–100 users</strong> <span style="font-size:10px;background:#fed7aa;color:#9a3412;padding:1px 6px;border-radius:10px;margin-left:4px;">sweet spot</span></td>
+              <td><strong>~&euro;10 000 ARR</strong></td>
+              <td><strong>~&euro;833 MRR</strong></td>
+              <td><strong>5 deals &#10003;</strong></td>
+              <td><strong>~33 leads</strong></td>
+              <td style="color:var(--orange);font-weight:700">&#9888;&#65039; 2&times; volume actuel</td>
+            </tr>
+            <tr class="cible-row">
+              <td><strong>100–200 users</strong> <span style="font-size:10px;background:#bbf7d0;color:#065f46;padding:1px 6px;border-radius:10px;margin-left:4px;">cible recommandée</span></td>
+              <td><strong>~&euro;18 000 ARR</strong></td>
+              <td><strong>~&euro;1 500 MRR</strong></td>
+              <td><strong>3 deals &#10003;</strong></td>
+              <td><strong>~20 leads &#10003;</strong></td>
+              <td style="color:var(--green);font-weight:700">&#10003; Volume actuel suffisant</td>
+            </tr>
+            <tr>
+              <td>200+ users</td>
+              <td>~&euro;30 000 ARR</td>
+              <td>~&euro;2 500 MRR</td>
+              <td>1.6 deals &#10003;</td>
+              <td>~11 leads &#10003;</td>
+              <td style="color:var(--green)">&#10003; Si outbound structuré</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-card">
+        La cadence actuelle (~16 leads/mois) est suffisante si Eloi cible des comptes de <strong>100–200 utilisateurs</strong>. L'enjeu n'est pas le volume de leads &mdash; c'est la <strong>taille des comptes</strong>. Actuellement les deals actifs moyennent ~35 utilisateurs. Objectif&nbsp;: upscale vers <strong>100+ users</strong> (collectivités, fédérations, PME structurées, établissements publics).
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</div><!-- /tab-forecast -->
+
+
+<!-- ╔══════════════ TAB 2 : PIPELINE ══════════════╗ -->
+<div id="tab-pipeline" class="tab-content">
+  <div class="container">
+
+    <!-- ── D. PIPELINE ACTIF ── -->
+    <section>
+      <div class="section-title">
+        D &mdash; Pipeline actif &mdash; Opps New Business
+        <span class="subtitle">5 deals &middot; ~&euro;2 700 ARR connu &middot; ~&euro;13 700 ARR estimé</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Deal</th>
+              <th>Stage</th>
+              <th>Déc. ?</th>
+              <th>ARR (connu/est.)</th>
+              <th>MRR equiv.</th>
+              <th>Close date</th>
+              <th>Prob.</th>
+              <th>Weighted ARR</th>
+              <th>Dernière touche</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- 1 — Proposal Sent (le plus avancé) -->
+            <tr>
+              <td><strong>Mairie de Veigy-Foncenex</strong><br><span style="font-size:11px;color:var(--muted)">Cédric Donzel</span></td>
+              <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Conseillé mun. — élus valident</span></td>
+              <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;6 000 / 40u)</span></td>
+              <td>~&euro;500 MRR est.</td>
+              <td class="date-urgent">31/05/2026</td>
+              <td>60%</td>
+              <td><strong>~&euro;3 600 est.</strong></td>
+              <td><span class="touch ok">&#10003; 2j — 22/04</span></td>
+            </tr>
+            <tr class="next-step-row">
+              <td colspan="9">
+                <div class="ns-box ns-ok">
+                  <span class="ns-label ok">&#8594; Next Step</span>
+                  Attendre retour devis (40 users). <strong>Relancer Cédric si pas de retour d'ici 30/04.</strong>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 2 — Solution Fit (urgent — trial actif) -->
+            <tr style="background:#fffbeb;">
+              <td><strong>Rhône Digital — New Biz</strong><br><span style="font-size:11px;color:var(--muted)">Etienne GOSSET</span></td>
+              <td><span class="stage-badge stage-solution">Solution Fit</span></td>
+              <td><span class="dm-badge dm-yes">&#10003; PME — décideur</span></td>
+              <td>TBD <span style="font-size:10px;color:var(--orange)">&#9888; Trial 15j activé</span></td>
+              <td>~&euro;TBD</td>
+              <td class="date-far">08/06/2026</td>
+              <td>60%</td>
+              <td><strong>~&euro;TBD</strong></td>
+              <td><span class="touch today">&#128308; Auj. — en attente réponse</span></td>
+            </tr>
+            <tr class="next-step-row" style="background:#fffbeb;">
+              <td colspan="9">
+                <div class="ns-box ns-urgent">
+                  <span class="ns-label urgent">&#128293; URGENT</span>
+                  Répondre aux questions d'Etienne (24/04 08h44 — backup config, tags, LDAP). <strong>Trial expire ~07/05, D-2 contact = 05/05.</strong> Préparer offre Rise après validation.
+                </div>
+              </td>
+            </tr>
+
+            <!-- 3 — Solution Fit (essai 30j) -->
+            <tr>
+              <td><strong>Cetusia</strong><br><span style="font-size:11px;color:var(--muted)">Temi Ifekoya + E. Elien</span></td>
+              <td><span class="stage-badge stage-solution">Solution Fit</span></td>
+              <td><span class="dm-badge dm-partial">&#9651; Champion Temi — E. Elien gérant</span></td>
+              <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;1 500 / 10u)</span></td>
+              <td>~&euro;125 MRR est.</td>
+              <td class="date-far">30/06/2026</td>
+              <td>40%</td>
+              <td><strong>~&euro;600 est.</strong></td>
+              <td><span class="touch ok">&#10003; 4j — 20/04</span></td>
+            </tr>
+            <tr class="next-step-row">
+              <td colspan="9">
+                <div class="ns-box">
+                  <span class="ns-label">&#8594; Next Step</span>
+                  Suivi mi-essai <strong>~5 mai</strong> — essai 1 mois activé 22/04, expire ~22 mai. Valider messagerie vs Slack + gestion projet vs Notion. <strong>S'assurer qu'Emmanuel Elien (gérant) est engagé dans l'évaluation.</strong>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 4 — Discovery Complete -->
+            <tr>
+              <td><strong>UTBM – ArcInnoLab</strong><br><span style="font-size:11px;color:var(--muted)">Emmanuelle Chevalier</span></td>
+              <td><span class="stage-badge stage-discovery">Discovery Complete</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Chargée projet — DSI/Direction</span></td>
+              <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;8–20k)</span></td>
+              <td>~&euro;1 000 MRR est.</td>
+              <td class="date-far">31/07/2026</td>
+              <td>20%</td>
+              <td><strong>~&euro;2 800 est.</strong></td>
+              <td><span class="touch ok">&#10003; 4j — 20/04</span></td>
+            </tr>
+            <tr class="next-step-row">
+              <td colspan="9">
+                <div class="ns-box">
+                  <span class="ns-label">&#8594; Next Step</span>
+                  Attente cahier des charges demandé par Philippe 20/04. <strong>Relancer Emmanuelle si pas de retour d'ici 01/05.</strong> Identifier le vrai décideur (DSI / Direction) avant d'avancer.
+                </div>
+              </td>
+            </tr>
+
+            <!-- 5 — Discovery Scheduled (le moins avancé) -->
+            <tr>
+              <td><strong>FortSchritt</strong><br><span style="font-size:11px;color:var(--muted)">Sabrina Freiwald</span></td>
+              <td><span class="stage-badge stage-discovery">Discovery Scheduled</span></td>
+              <td><span class="dm-badge dm-unknown">? Chargée projet</span></td>
+              <td>&euro;2 500 ARR</td>
+              <td>~&euro;208 MRR</td>
+              <td class="date-far">14/06/2026</td>
+              <td>10%</td>
+              <td><strong>&euro;250</strong></td>
+              <td><span class="touch late">&#9888; 9j — 15/04</span></td>
+            </tr>
+            <tr class="next-step-row">
+              <td colspan="9">
+                <div class="ns-box">
+                  <span class="ns-label">&#8594; Next Step</span>
+                  Appel discovery avec Philippe <strong>~7 mai</strong> — préparer devis Rise 100 actifs + 3 packs Guests + module Structure, remise NPO 50% → ~2 400 €/an. Qualifier le décideur avant la démo.
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <div class="health-row">
+        <div class="health-card" style="border-top:3px solid var(--red)">
+          <div class="h-title">&#9888;&#65039; Deals sans montant : 3/5</div>
+          <div class="h-sub">Mairie Veigy, Cetusia, UTBM &rarr; Compléter HubSpot avec ARR estimé</div>
+        </div>
+        <div class="health-card" style="border-top:3px solid var(--orange)">
+          <div class="h-title">&#128197; Close dates Q2 : 4/5 deals</div>
+          <div class="h-sub">Urgence&nbsp;: Mairie Veigy 31/05 &mdash; 37 jours restants</div>
+        </div>
+        <div class="health-card" style="border-top:3px solid var(--accent)">
+          <div class="h-title">&#9654; Prochaine action critique</div>
+          <div class="h-sub">Relancer Cédric Donzel (Mairie Veigy) d'ici le <strong>30/04</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── E. TRIALS ACTIFS ── -->
+    <section>
+      <div class="section-title">
+        E &mdash; Tour de Contrôle — Impact Delivery
+        <span class="subtitle">Onboarding → Adoption · Impact promis → Impact livré</span>
+      </div>
+
+      <div class="trial-grid">
+
+        <div class="trial-grid-header ts">&#9679; Talkspirit Trials</div>
+
+        <!-- Cetusia -->
+        <div class="trial-card active">
+          <div class="trial-header">
+            <div>
+              <div class="trial-name">Cetusia</div>
+              <div class="trial-company">Temi Ifekoya + Emmanuel Elien (gérant)</div>
+            </div>
+            <span class="trial-tag running">Essai 30j actif</span>
+          </div>
+          <div class="trial-rows">
+            <div class="trial-row">
+              <span class="trial-key">Activation :</span>
+              <span class="trial-val">22/04/2026</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Expiration :</span>
+              <span class="trial-val"><strong>22/05/2026</strong> (dans 28j)</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Contact D-2 requis :</span>
+              <span class="trial-val"><strong>20/05/2026</strong></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Suivi mi-essai :</span>
+              <span class="trial-val"><strong>~5 mai</strong> — point clé à planifier</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Démo initiale :</span>
+              <span class="trial-val">&#10003; Réalisée 17/04 avec Philippe</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Dernière touche :</span>
+              <span class="trial-val"><span class="touch ok">&#10003; 4j &mdash; 20/04 (Eloi)</span></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Impact promis :</span>
+              <span class="trial-val">Remplacer Slack + Notion · 10→30 utilisateurs · gain ≥2h/sem/personne</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Dernière connexion :</span>
+              <span class="trial-val" id="login-cetusia"><span class="live-login ll-load">⟳ chargement…</span></span>
+            </div>
+            <div class="trial-row" id="trial-end-cetusia-row" style="display:none">
+              <span class="trial-key">Expiration (sheet) :</span>
+              <span class="trial-val" id="trial-end-cetusia"></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Plateforme :</span>
+              <span class="trial-val">cetusia.talkspirit.com</span>
+            </div>
+          </div>
+          <div id="engagement-cetusia"></div>
+          <div class="trial-alert">
+            &#128336; Prochain contact : <strong>~5 mai</strong> — valider messagerie (vs Slack) + gestion projet (vs Notion). Objectif : confirmer la valeur avant mi-essai.
+          </div>
+        </div>
+
+        <!-- Rhône Digital / Etienne GOSSET -->
+        <div class="trial-card urgent">
+          <div class="trial-header">
+            <div>
+              <div class="trial-name">Rhône Digital — Etienne GOSSET</div>
+              <div class="trial-company">gosset.eti@gmail.com</div>
+            </div>
+            <span class="trial-tag urgent">Trial 15j — URGENT</span>
+          </div>
+          <div class="trial-rows">
+            <div class="trial-row">
+              <span class="trial-key">Activation :</span>
+              <span class="trial-val">23/04/2026</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Expiration :</span>
+              <span class="trial-val"><strong style="color:var(--red)">~07/05/2026</strong> (dans 13j)</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Contact D-2 requis :</span>
+              <span class="trial-val"><strong style="color:var(--red)">05/05/2026</strong></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Démo initiale :</span>
+              <span class="trial-val">&#10003; Réalisée 22/04 avec Philippe + Eloi</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Dernière touche :</span>
+              <span class="trial-val"><span class="touch today">&#128308; Auj. 24/04 — en attente réponse Eloi</span></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Impact promis :</span>
+              <span class="trial-val">Centraliser communication PME · onboarding équipe 15j · remplacer WhatsApp pro</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Dernière connexion :</span>
+              <span class="trial-val" id="login-rhone"><span class="live-login ll-load">⟳ chargement…</span></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Questions en suspens :</span>
+              <span class="trial-val">backup config, tags, LDAP/AD</span>
+            </div>
+          </div>
+          <div id="engagement-rhone"></div>
+          <div class="trial-alert red">
+            &#128293; ACTION IMMÉDIATE : Répondre aux questions d'Etienne (24/04 08h44). Trial expire <strong>~07/05</strong>. D-2 contact = <strong>05/05</strong>. Préparer offre Rise après validation de l'essai.
+          </div>
+        </div>
+
+        <div class="trial-grid-header hola">&#9679; Holaspirit Trials</div>
+
+        <!-- Sabrina Freiwald — Fortschritt Bayern — Holaspirit -->
+        <div class="trial-card hola active">
+          <div class="trial-header">
+            <div>
+              <div class="trial-name">Sabrina Freiwald <span class="deal-pipeline-link">&#8594; Deal FortSchritt</span></div>
+              <div class="trial-company">Fortschritt Bayern &mdash; sabrina.freiwald@fortschritt-bayern.de</div>
+            </div>
+            <span class="trial-tag holaspirit">Holaspirit Trial</span>
+          </div>
+          <div class="trial-rows">
+            <div class="trial-row">
+              <span class="trial-key">Produit :</span>
+              <span class="trial-val">Holaspirit &mdash; Gouvernance &amp; Org Design (Holacracy)</span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Fin trial :</span>
+              <span class="trial-val" id="hola-trial-end-sabrina"><span class="live-login ll-load">&#10231; chargement&hellip;</span></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Derni&#232;re connexion :</span>
+              <span class="trial-val" id="hola-login-sabrina"><span class="live-login ll-load">&#10231; chargement&hellip;</span></span>
+            </div>
+            <div class="trial-row">
+              <span class="trial-key">Lien pipeline :</span>
+              <span class="trial-val">&#8594; Deal <strong>FortSchritt</strong> (Discovery Scheduled) &mdash; m&#234;me organisation</span>
+            </div>
+          </div>
+          <div id="hola-engagement-sabrina">
+            <div class="hola-metrics">
+              <div class="hola-metric" id="hola-ae-sabrina">
+                <div class="hm-val" id="hola-ae-val">&#8212;</div>
+                <div class="hm-label" id="hola-ae-label">Quantit&#233;</div>
+              </div>
+              <div class="hola-metric" id="hola-ao-sabrina">
+                <div class="hm-val" id="hola-ao-val">&#8212;</div>
+                <div class="hm-label" id="hola-ao-label">Tensions accept&#233;es</div>
+              </div>
+            </div>
+          </div>
+          <div id="hola-score-sabrina"></div>
+          <div class="trial-alert">
+            &#127919; Sabrina utilise activement Holaspirit (gouvernance holacracy). Qualifier le besoin org design + lien avec deal FortSchritt en pipeline &mdash; potentiel double closing Talkspirit + Holaspirit.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sheet-link" id="hola-live-area" style="margin-bottom:8px">
+        &#128202; <span><strong>Holaspirit Owners</strong> (Google Sheet &mdash; Col. AE &amp; AO : activité trial) &mdash; <a href="https://docs.google.com/spreadsheets/d/1bFneY-TeS44lP9D4IIIqGEcGaDmgRtjAur0eVQKLdHw/edit" target="_blank">Ouvrir Google Sheet</a></span>
+        <span class="live-badge live-init" id="hola-status-badge"><span class="live-dot pulsing"></span><span id="hola-status-text">En attente déploiement…</span></span>
+      </div>
+
+      <div class="sheet-link" id="sheet-live-area">
+        &#128202; <span><strong>Talkspirit Owners</strong> (Google Sheet temps réel &mdash; 300 lignes mises à jour/h) &mdash; Col. O&nbsp;: fin trial &middot; Col. AC&nbsp;: dernière connexion trialist &rarr; <a href="https://docs.google.com/spreadsheets/d/1JcniHSyA38jLHALmzaEMSKKIIx1IWDF-jfCasLlm4EM/edit" target="_blank">Ouvrir Google Sheet</a></span>
+        <span class="live-badge live-init" id="live-status-badge"><span class="live-dot pulsing"></span><span id="live-status-text">Connexion…</span></span>
+      </div>
+      <div id="setup-banner-area"></div>
+    </section>
+
+  </div><!-- /container -->
+</div><!-- /tab-pipeline -->
+
+
+<!-- ╔══════════════ TAB 3 : LEADS & FUNNEL ══════════════╗ -->
+<div id="tab-leads" class="tab-content">
+  <div class="container">
+
+    <!-- ── A. FUNNEL VISUEL ── -->
+    <section>
+      <div class="section-title">A &mdash; Funnel de conversion &mdash; 14 derniers jours</div>
+      <div class="funnel-wrap">
+        <div class="funnel-stages">
+          <!-- Stage 1 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">Contacts créés</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:100%;background:#4361ee;">8 contacts</div>
+              <div class="funnel-pct">100%</div>
+            </div>
+          </div>
+          <!-- Stage 2 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">Contactés par email</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:100%;background:#5c76f0;">8 / 8</div>
+              <div class="funnel-pct">100%</div>
+            </div>
+          </div>
+          <!-- Stage 3 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">Réponses obtenues</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:63%;background:#06d6a0;">5 / 8</div>
+              <div class="funnel-pct">63%</div>
+            </div>
+          </div>
+          <!-- Stage 4 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">SQLs qualifiés</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:38%;background:#f77f00;">3 / 8</div>
+              <div class="funnel-pct">38%</div>
+            </div>
+          </div>
+          <!-- Stage 5 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">Deals actifs</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:25%;background:#ef8c00;">2 / 8</div>
+              <div class="funnel-pct">25%</div>
+            </div>
+          </div>
+          <!-- Stage 6 -->
+          <div class="funnel-stage">
+            <div class="funnel-stage-label">Signés</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="width:5%;background:#cbd5e1;color:var(--muted);min-width:36px;">0</div>
+              <div class="funnel-pct" style="color:var(--muted)">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="funnel-mini-stats">
+          <div class="funnel-stat">
+            <div class="fs-val">100%</div>
+            <div class="fs-label">Taux contact</div>
+          </div>
+          <div class="funnel-stat">
+            <div class="fs-val">63%</div>
+            <div class="fs-label">Taux réponse</div>
+          </div>
+          <div class="funnel-stat">
+            <div class="fs-val" style="color:var(--orange)">38%</div>
+            <div class="fs-label">Lead-to-SQL</div>
+          </div>
+          <div class="funnel-stat">
+            <div class="fs-val" style="color:var(--accent)">25%</div>
+            <div class="fs-label">Lead-to-Deal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── B. REVERSE FUNNEL ── -->
+    <section>
+      <div class="section-title">B &mdash; Reverse funnel : volume de leads nécessaire pour atteindre &euro;4 000 MRR/mois</div>
+      <div class="scenario-row">
+
+        <!-- Scénario Actuel -->
+        <div class="scenario-card orange-outline">
+          <div class="scenario-title" style="color:var(--orange)">&#128308; Scénario Actuel</div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Avg deal size</span>
+            <span class="sc-val">~&euro;3 500 ARR</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Deals/mois requis</span>
+            <span class="sc-val">14</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">SQLs requis (40% SQL→close)</span>
+            <span class="sc-val">35</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Leads requis (38% L→SQL)</span>
+            <span class="sc-val" style="color:var(--red);font-size:16px;font-weight:800;">92</span>
+          </div>
+          <div class="scenario-verdict" style="background:#fff7ed;color:#9a3412;">
+            &#10060; Volume actuel (16/mois) &times; 6 &mdash; non viable
+          </div>
+        </div>
+
+        <!-- Scénario Cible -->
+        <div class="scenario-card green-outline">
+          <div class="scenario-title" style="color:#065f46">&#127919; Scénario Cible <span style="font-size:10px;background:#bbf7d0;padding:2px 6px;border-radius:8px;">recommandé</span></div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Avg deal size</span>
+            <span class="sc-val">~&euro;10 000 ARR</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Deals/mois requis</span>
+            <span class="sc-val">5</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">SQLs requis (40% SQL→close)</span>
+            <span class="sc-val">13</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Leads requis (38% L→SQL)</span>
+            <span class="sc-val" style="color:var(--orange);font-size:16px;font-weight:800;">33</span>
+          </div>
+          <div class="scenario-verdict" style="background:#f0fdf4;color:#14532d;">
+            &#9888;&#65039; Volume actuel &times; 2 &mdash; atteignable avec outbound
+          </div>
+        </div>
+
+        <!-- Scénario Optimal -->
+        <div class="scenario-card blue-outline">
+          <div class="scenario-title" style="color:var(--accent)">&#9989; Scénario Optimal</div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Avg deal size</span>
+            <span class="sc-val">~&euro;18 000 ARR</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Deals/mois requis</span>
+            <span class="sc-val">3</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">SQLs requis (40% SQL→close)</span>
+            <span class="sc-val">7</span>
+          </div>
+          <div class="scenario-row-item">
+            <span class="sc-label">Leads requis (38% L→SQL)</span>
+            <span class="sc-val" style="color:var(--green);font-size:16px;font-weight:800;">18</span>
+          </div>
+          <div class="scenario-verdict" style="background:#eff6ff;color:#1e40af;">
+            &#10003; Volume actuel SUFFISANT &mdash; focus sur la qualification
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card green-bg">
+        Le volume de leads inbound est déjà presque suffisant pour l'objectif &euro;4 000 MRR/mois &mdash; à condition de cibler des comptes de <strong>100+ utilisateurs</strong>. L'action prioritaire est de <strong>qualifier la taille des comptes dès le premier contact</strong> et d'éviter de perdre du temps sur des leads &lt;25 users.
+      </div>
+    </section>
+
+      <!-- ── CR — Métriques de Conversion (WBD Bowtie) ── -->
+      <section>
+        <div class="section-title">
+          Taux de Conversion — CR Metrics (Winning by Design)
+          <span class="subtitle">Operator metrics · Piloter l'efficacité, pas seulement les volumes</span>
+        </div>
+
+        <div class="cr-benchmark">
+          <span style="font-size:18px">📐</span>
+          <div>
+            <strong>WBD Benchmark HLG (Medium Touch) :</strong> CR1 ~30–50% · CR3 ~40–60% · CR4 (win rate) ~20–30% · GRR &gt;90%<br>
+            Ces taux sont des <strong>operator metrics</strong> — ils permettent de diagnostiquer où se perdent les deals, pas juste combien on en a.
+          </div>
+        </div>
+
+        <div class="cr-grid">
+
+          <div class="cr-card cr-blue">
+            <div class="cr-id">CR 1 — Awareness</div>
+            <div class="cr-label">Leads → Opportunités<br>(taux de qualification)</div>
+            <div class="cr-value">63%</div>
+            <div class="cr-formula">5 opps / 8 leads</div>
+            <span class="cr-status good">✓ Bon signal</span>
+          </div>
+
+          <div class="cr-card cr-green">
+            <div class="cr-id">CR 3 — Prioritization</div>
+            <div class="cr-label">Opps → Qualified<br>(post-discovery call)</div>
+            <div class="cr-value">60%</div>
+            <div class="cr-formula">3 qualified / 5 opps</div>
+            <span class="cr-status good">✓ Dans la norme</span>
+          </div>
+
+          <div class="cr-card cr-orange">
+            <div class="cr-id">CR 4 — Selection</div>
+            <div class="cr-label">Win Rate<br>(qualified → commit)</div>
+            <div class="cr-value">TBD</div>
+            <div class="cr-formula">0 won / 3 qualified (ce trim.)</div>
+            <span class="cr-status tbd">→ À mesurer sur 12m</span>
+          </div>
+
+          <div class="cr-card cr-purple">
+            <div class="cr-id">CR 7 — Retention</div>
+            <div class="cr-label">GRR — Gross Revenue<br>Retention (anti-churn)</div>
+            <div class="cr-value">TBD</div>
+            <div class="cr-formula">MRR conservé / MRR début période</div>
+            <span class="cr-status tbd">→ Renseigner avec Philippe</span>
+          </div>
+
+        </div>
+
+        <div style="padding:10px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:11px;color:#92400e">
+          ⚡ <strong>Δt (Time metrics WBD) :</strong> Temps moyen dans chaque stage = non tracké actuellement.
+          Δt4 (durée cycle de vente) et Δt6 (temps au premier impact pour les trials) sont les deux plus critiques à instrumenter.
+          À ajouter dans HubSpot : date d'entrée par stage.
+        </div>
+      </section>
+
+    <!-- ── C. LEADS TABLE ── -->
+    <section>
+      <div class="section-title">C &mdash; Leads entrants &mdash; 14 derniers jours (8 contacts)</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Société</th>
+              <th>Date</th>
+              <th>Statut</th>
+              <th>Déc. ?</th>
+              <th>Potentiel ARR</th>
+              <th>Dernière touche</th>
+              <th>Source</th>
+              <th>Activité / Prochaine action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Temi Ifekoya</strong></td>
+              <td>Cetusia</td>
+              <td>13/04</td>
+              <td><span class="status-badge status-sql">SQL</span></td>
+              <td><span class="dm-badge dm-partial">&#9651; Champion — E. Elien gérant</span></td>
+              <td><span class="arr-low">~&euro;1 500 ARR &#128308; 10u</span></td>
+              <td><span class="touch ok">&#10003; 4j &mdash; 20/04</span></td>
+              <td>—</td>
+              <td>Essai 1 mois activé 22/04 &mdash; suivi ~5 mai</td>
+            </tr>
+            <tr style="background:#fff8ed;">
+              <td><strong>Warren Almin</strong></td>
+              <td>Conseil Dép. du Jura</td>
+              <td>13/04</td>
+              <td><span class="status-badge status-mql">MQL</span></td>
+              <td><span class="dm-badge dm-partial">&#9651; Dir. territoires — valider si budget</span></td>
+              <td><span class="arr-high">~&euro;30 000+ ARR &#128994; 200+u</span></td>
+              <td><span class="touch late">&#9888; 9j &mdash; 15/04</span></td>
+              <td>Demo form</td>
+              <td>Démo réalisée 14/04 &mdash; <strong>follow-up post-démo à faire !</strong></td>
+            </tr>
+            <tr style="background:#fff8ed;">
+              <td><strong>Eléonore CRANE</strong></td>
+              <td>Acteo Services</td>
+              <td>14/04</td>
+              <td><span class="status-badge status-inprog">IN_PROGRESS</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Chargée mission</span></td>
+              <td><span class="arr-mid">~&euro;7 500 ARR &#128993; ~50u</span></td>
+              <td><span class="touch late">&#9888; 7j &mdash; 17/04</span></td>
+              <td>Organic SEO</td>
+              <td>RDV manqué &mdash; <strong>à relancer cette semaine</strong></td>
+            </tr>
+            <tr style="background:#fff8ed;">
+              <td><strong>Eden JEAN-MARIE</strong></td>
+              <td>Tempta</td>
+              <td>14/04</td>
+              <td><span class="status-badge status-mql">MQL</span></td>
+              <td><span class="dm-badge dm-yes">&#10003; Co-gérant</span></td>
+              <td><span class="arr-low">~&euro;3 000 ARR &#128308; ~20u</span></td>
+              <td><span class="touch late">&#9888; 7j &mdash; 17/04</span></td>
+              <td>Organic SEO</td>
+              <td>Démo réalisée 17/04 &mdash; <strong>pas de follow-up post-démo envoyé</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Dominic von Proeck</strong></td>
+              <td>Leaders of AI LAI GmbH</td>
+              <td>14/04</td>
+              <td><span class="status-badge status-open">OPEN_DEAL</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Sales — qui signe ?</span></td>
+              <td><span class="arr-low">~&euro;1 800 ARR &#128308; 12u</span></td>
+              <td><span class="touch ok">&#10003; 4j &mdash; 20/04</span></td>
+              <td>Direct</td>
+              <td>Devis 12 users envoyé 20/04 &mdash; pas de retour</td>
+            </tr>
+            <tr>
+              <td><strong>Nassim Kemali</strong></td>
+              <td>ELSAN Polyclinique la Pergola</td>
+              <td>15/04</td>
+              <td><span class="status-badge status-inprog">IN_PROGRESS</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Chargé com. — DAF/Direction ?</span></td>
+              <td><span class="arr-high">~&euro;30 000+ ARR &#128994; si groupe ELSAN</span></td>
+              <td><span class="touch ok">&#10003; 4j &mdash; 20/04</span></td>
+              <td>Organic SEO</td>
+              <td>En attente réponse &mdash; relancer si pas de retour lundi</td>
+            </tr>
+            <tr style="background:#fef2f2;">
+              <td><strong>Clémentine Perdrix</strong></td>
+              <td>Audition Conseil</td>
+              <td>16/04</td>
+              <td><span class="status-badge status-nvp">NVP</span></td>
+              <td><span class="dm-badge dm-unknown">DRH — NVP</span></td>
+              <td><span class="arr-low">~&euro;30 000 ARR &#128308; NVP</span></td>
+              <td><span class="touch ok">&#10003; 3j &mdash; 21/04</span></td>
+              <td>AI Referral / ChatGPT</td>
+              <td>Disqualifiée &mdash; LUCCA + Jobaffinity requis</td>
+            </tr>
+            <tr>
+              <td><strong>Cédric Donzel</strong></td>
+              <td>Mairie de Veigy-Foncenex</td>
+              <td>20/04</td>
+              <td><span class="status-badge status-sql">SQL</span></td>
+              <td><span class="dm-badge dm-no">&#10007; Conseillé mun. — élus valident</span></td>
+              <td><span class="arr-mid">~&euro;6 000 ARR &#128993; 40u</span></td>
+              <td><span class="touch ok">&#10003; 2j &mdash; 22/04</span></td>
+              <td>Direct</td>
+              <td>Devis envoyé &mdash; deal actif &mdash; relancer 30/04</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── D. SOURCES ── -->
+    <section>
+      <div class="section-title">D &mdash; Analyse des sources de leads</div>
+      <div class="source-grid">
+
+        <div class="source-card src-green">
+          <div class="src-title">Demo Form</div>
+          <div class="src-count">2 leads</div>
+          <div class="src-leads">
+            Warren Almin (CD Jura, grand compte &#10003;)<br>
+            Emmanuelle Chevalier / UTBM (institution &#128994;)
+          </div>
+          <div class="src-arr">Avg ARR potentiel : ~&euro;20 000+</div>
+          <div class="src-note">Source la plus qualitative &mdash; prioriser</div>
+        </div>
+
+        <div class="source-card src-yellow">
+          <div class="src-title">Organic SEO</div>
+          <div class="src-count">3 leads</div>
+          <div class="src-leads">
+            Eléonore CRANE (Acteo, ~50u &#128993;)<br>
+            Eden JEAN-MARIE (Tempta, ~20u &#128308;)<br>
+            Nassim Kemali (ELSAN, potentiel groupe &#128994;)
+          </div>
+          <div class="src-arr">Avg ARR potentiel : ~&euro;10 000</div>
+          <div class="src-note">Volume moyen &mdash; qualifier taille dès j+1</div>
+        </div>
+
+        <div class="source-card src-orange">
+          <div class="src-title">Direct / talkspirit.com</div>
+          <div class="src-count">2 leads</div>
+          <div class="src-leads">
+            Dominic von Proeck (très petit, 12u &#128308;)<br>
+            Cédric Donzel (moyen, 40u &#128993;)
+          </div>
+          <div class="src-arr">Avg ARR potentiel : ~&euro;4 000</div>
+          <div class="src-note">Leads directs souvent petits &mdash; ok si rapide à traiter</div>
+        </div>
+
+        <div class="source-card src-muted">
+          <div class="src-title">AI Referral / ChatGPT</div>
+          <div class="src-count">1 lead</div>
+          <div class="src-leads">
+            Clémentine Perdrix (NVP &mdash; Audition Conseil &#128308;)
+          </div>
+          <div class="src-arr">Avg ARR potentiel : 0 (NVP)</div>
+          <div class="src-note" style="background:#f8fafc;color:var(--muted);">1 occurrence &mdash; signal positif visibilité LLMs mais 0 qualification &mdash; à surveiller</div>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</div><!-- /tab-leads -->
+
+
+<!-- ╔══════════════ TAB 4 : QUALIFICATION SPICED ══════════════╗ -->
+<div id="tab-spiced" class="tab-content">
+  <div class="container">
+
+    <section>
+      <div class="section-title">
+        Qualification SPICED — Deals actifs &amp; leads chauds
+        <span class="subtitle">&#128269; S=Situation · P=Pain · I=Impact · C=Critical Event · E=Economic Buyer · D=Decision Process</span>
+      </div>
+
+      <div class="note-box" style="margin-bottom:20px;background:#f0f4ff;border-color:#c7d2fe;color:#3730a3;">
+        <strong>Mode d'emploi SPICED :</strong> Une cellule verte = qualifié · jaune = partiel · gris = inconnu (à qualifier). <strong>L'axe E (Economic Buyer)</strong> est critique pour closer — si le contact n'est pas décisionnaire, il faut l'armer pour vendre en interne ou obtenir l'accès au vrai décideur. Questions recommandées en bas de chaque fiche.
+      </div>
+
+      <!-- ── DEALS ACTIFS ── -->
+      <div class="section-title" style="font-size:12px;margin-bottom:12px;">Deals actifs (pipeline Opps)</div>
+      <div class="spiced-grid">
+
+        <!-- FortSchritt -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">FortSchritt Bayern gGmbH</div>
+              <div class="spiced-contact">Sabrina Freiwald · Chargée de projet · Germany</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-mid">3/6</span>
+              <span class="dm-badge dm-unknown" style="font-size:10px;">? Décisionnaire</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span>Inconnu — Sabrina est chargée de projet dans une NPO avec structure Teal/Holacracy. Le "décideur" est peut-être distribué. <strong>À qualifier lors du call 7 mai.</strong></span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>NPO allemande, structure Teal / Holacracy, ~100 actifs + 300 guests, transition organisationnelle en cours</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Clarté des rôles, coordination équipes Teal, besoin d'une plateforme multilingue (DE/FR) pour collaboration</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Meilleure coordination interne — impact non quantifié. À chiffrer (coût de la désorganisation actuelle ?)</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non identifié — call ~7 mai prévu mais pas de deadline formelle</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Inconnu — Sabrina n'a pas confirmé son pouvoir de décision / budget</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — processus de validation dans une NPO Teal ? Board ? Collectif ?</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Questions clés à poser lors du call ~7 mai</div>
+            <ul class="spiced-q-list">
+              <li>"Qui d'autre doit être impliqué dans cette décision en dehors de vous ?"</li>
+              <li>"Y a-t-il un budget déjà alloué pour cet outil, ou faut-il le faire valider ?"</li>
+              <li>"Quelle est votre date limite pour mettre cet outil en place ?"</li>
+              <li>"Si Talkspirit répond à vos besoins, qu'est-ce qui pourrait bloquer la signature ?"</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Rhône Digital -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">Rhône Digital — New Biz</div>
+              <div class="spiced-contact">Etienne GOSSET · gosset.eti@gmail.com</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-high">4/6</span>
+              <span class="dm-badge dm-yes" style="font-size:10px;">&#10003; Décideur PME</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span>Etienne semble décider seul (PME, a créé l'espace de démonstration lui-même, pose des questions techniques détaillées). <strong>Confirmer qu'il n'y a pas d'autre approbation nécessaire.</strong></span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>PME locale (Rhône Digital), SIRET confirmé, besoin outil collaboratif interne</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Communication + collaboration équipe, intégration possible LDAP/AD, gestion de tags</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — à explorer lors de la réponse aux questions techniques</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Trial 15j expire ~07/05 — deadline naturelle forte. Motivation confirmée (a créé l'espace).</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Etienne GOSSET — semble décider seul, a fourni les infos de facturation (SIRET)</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Questions techniques en cours (backup, tags, LDAP). Critères clairs mais process inconnu.</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Questions clés — répondre AUJOURD'HUI</div>
+            <ul class="spiced-q-list">
+              <li>Répondre aux questions techniques (backup config, tags, LDAP/AD)</li>
+              <li>"Êtes-vous le seul décisionnaire pour cet achat ?"</li>
+              <li>"Quel est votre principal objectif pour les 30 premiers jours d'utilisation ?"</li>
+              <li>"Si tout fonctionne bien dans le trial, quelle est votre date de décision ?"</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Mairie Veigy -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">Mairie de Veigy-Foncenex</div>
+              <div class="spiced-contact">Cédric Donzel · Conseillé municipal</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-mid">3/6</span>
+              <span class="dm-badge dm-no" style="font-size:10px;">&#10007; Pas décisionnaire</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span><strong>Risque élevé :</strong> Cédric est conseillé municipal — il a confirmé que les <em>nouveaux élus</em> veulent d'abord définir leur mode d'organisation. La décision sera collective / municipale. Identifier le Maire ou le DGS.</span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Collectivité locale, nouveaux élus, phase de réorganisation interne, ~40 utilisateurs potentiels</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Communication élus + agents mairie, remontée d'informations, coordination interne</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Phase de définition d'organisation en cours — fenêtre d'influence, mais délai inconnu</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span><strong>Inconnu — Cédric n'est pas décisionnaire.</strong> Qui est le Maire / DGS qui valide les achats ?</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — processus municipal ? délibération ? marché public ?</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Questions clés à poser à Cédric (avant 30/04)</div>
+            <ul class="spiced-q-list">
+              <li>"Qui est la personne qui validera cet achat côté mairie — le Maire, le DGS ?"</li>
+              <li>"Pouvez-vous organiser une démo avec les personnes décisionnaires ?"</li>
+              <li>"Y a-t-il un process de marché public pour ce type d'outil ou c'est en décision directe ?"</li>
+              <li>"Quand pensez-vous que la mairie sera prête à prendre cette décision ?"</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Cetusia -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">Cetusia</div>
+              <div class="spiced-contact">Temi Ifekoya (champion) + Emmanuel Elien (gérant)</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-high">4/6</span>
+              <span class="dm-badge dm-partial" style="font-size:10px;">&#9651; E. Elien décide</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span>Emmanuel Elien est le gérant — c'est lui le décideur final. Temi est le champion. <strong>S'assurer qu'Emmanuel est engagé dans l'évaluation du trial.</strong> Il était en cc sur les emails.</span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Start-up créée il y a 1 an, ~10 personnes, phase de croissance, plateforme cetusia.talkspirit.com active</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Remplacer Slack (messagerie) + Notion (gestion projet) par un seul outil centralisé</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Réduction des coûts (Slack ~€8/u + Notion ~€8/u = économie potentielle) — non formalisé</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Essai 30j expire 22/05 — deadline concrète. Croissance de l'équipe = fenêtre d'adoption.</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Emmanuel Elien (gérant) = décideur identifié, mais son niveau d'engagement dans le trial est inconnu</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Critères : messagerie vs Slack + gestion projet vs Notion. Process simple (PME). Décision rapide.</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Questions clés — suivi mi-essai ~5 mai</div>
+            <ul class="spiced-q-list">
+              <li>"Emmanuel, est-ce que vous avez eu l'occasion de tester la plateforme ?"</li>
+              <li>"Combien vous coûtent Slack et Notion actuellement par mois ?"</li>
+              <li>"Qu'est-ce qui vous ferait dire que le trial est un succès ?"</li>
+              <li>"Si c'est concluant, quelle est votre date de décision ? Fin mai ?"</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- UTBM -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">UTBM — ArcInnoLab</div>
+              <div class="spiced-contact">Emmanuelle Chevalier · Chargée de projet ArcInnoLab</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-low">2/6</span>
+              <span class="dm-badge dm-no" style="font-size:10px;">&#10007; Pas décisionnaire</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span><strong>Risque :</strong> Emmanuelle est chargée de projet, pas décisionnaire budget. Dans une université, la validation passe par la Direction / DSI / Service achats. Pipeline long probable. Accès au décideur clé.</span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Université de Technologie (établissement public), projet ArcInnoLab, coordination multi-acteurs R&amp;I</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>3 besoins priorisés : 1) Gestion projet collaborative (planning + facturation), 2) Gestion contenu web externe, 3) Marketplace</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — combien de porteurs de projet impliqués ? Quelle valeur si outil intégré ?</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non identifié — attente cahier des charges. Y a-t-il une date de démarrage de projet ?</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Inconnu — Direction UTBM ? DSI ? Chef de projet ArcInnoLab financeur ?</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — appel d'offres ? bon de commande direct ? quel budget disponible ?</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Questions clés — dès réception du cahier des charges</div>
+            <ul class="spiced-q-list">
+              <li>"Qui devra valider le choix de l'outil au sein de l'UTBM — la Direction, la DSI ?"</li>
+              <li>"Quel est le budget prévu pour cet outil ?"</li>
+              <li>"Y a-t-il une date de démarrage du projet ArcInnoLab qui impose une deadline ?"</li>
+              <li>"Faut-il passer par un marché public ou pouvez-vous acheter directement ?"</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /spiced-grid deals -->
+
+      <!-- ── LEADS NON ENCORE EN DEAL ── -->
+      <div class="section-title" style="font-size:12px;margin-top:28px;margin-bottom:12px;">Leads actifs sans deal ouvert (priorité à qualifier)</div>
+      <div class="spiced-grid">
+
+        <!-- Warren Almin -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">Conseil Départemental du Jura</div>
+              <div class="spiced-contact">Warren Almin · Directeur des territoires, Pôle Solidarité</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-low">2/6</span>
+              <span class="dm-badge dm-partial" style="font-size:10px;">&#9651; Potentiel décideur fonctionnel</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span>Directeur des territoires = décideur fonctionnel probable. Dans une collectivité, l'achat logiciel passe souvent par la DSI ou le budget de service. <strong>Follow-up post-démo urgent (9j sans contact).</strong></span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Conseil Départemental du Jura, Pôle Solidarité, 200+ agents concernés, secteur public</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val partial"><span class="spiced-dot dot-partial"></span>Coordination entre équipes du Pôle Solidarité — détaillé en démo 14/04, à consolider</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non identifié</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Warren = directeur — à confirmer si budget propre ou validation DSI/DG</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Actions immédiates — 9j sans contact, GRAND COMPTE</div>
+            <ul class="spiced-q-list">
+              <li>Envoyer le follow-up post-démo AUJOURD'HUI (recap des enjeux + proposition d'étape suivante)</li>
+              <li>"Suite à notre démo, avez-vous pu partager cela avec d'autres personnes en interne ?"</li>
+              <li>"Qui doit être impliqué pour avancer sur ce projet ?"</li>
+              <li>"Quelle est votre échéance pour trouver une solution ?"</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Eden JEAN-MARIE -->
+        <div class="spiced-card">
+          <div class="spiced-card-header">
+            <div>
+              <div class="spiced-deal-name">Tempta</div>
+              <div class="spiced-contact">Eden JEAN-MARIE · Co-gérant · Démo réalisée 17/04</div>
+            </div>
+            <div class="spiced-score">
+              <span class="score-badge score-low">2/6</span>
+              <span class="dm-badge dm-yes" style="font-size:10px;">&#10003; Co-gérant = décideur</span>
+            </div>
+          </div>
+          <div class="spiced-dm-row">
+            <span class="spiced-dm-label">Economic Buyer :</span>
+            <span>Eden est co-gérant = décisionnaire confirmé. <strong>Pas de follow-up post-démo envoyé (7j) — risque de perte d'intérêt.</strong> Ouvrir un deal dans HubSpot.</span>
+          </div>
+          <div class="spiced-table-wrap">
+            <table class="spiced-table">
+              <tr>
+                <td><span class="spiced-key sk-s">S</span></td>
+                <td class="spiced-dim-name">Situation</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>PME Tempta, co-gérant, R&amp;D, ~20 personnes</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-p">P</span></td>
+                <td class="spiced-dim-name">Pain</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié — démo réalisée 17/04 mais no follow-up recap</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-i">I</span></td>
+                <td class="spiced-dim-name">Impact</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-c">C</span></td>
+                <td class="spiced-dim-name">Critical Event</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non identifié</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-e">E</span></td>
+                <td class="spiced-dim-name">Econ. Buyer</td>
+                <td class="spiced-val filled"><span class="spiced-dot dot-ok"></span>Co-gérant = décideur confirmé</td>
+              </tr>
+              <tr>
+                <td><span class="spiced-key sk-d">D</span></td>
+                <td class="spiced-dim-name">Decision</td>
+                <td class="spiced-val missing"><span class="spiced-dot dot-missing"></span>Non qualifié</td>
+              </tr>
+            </table>
+          </div>
+          <div class="spiced-questions">
+            <div class="spiced-q-title">Actions immédiates — 7j sans contact, décideur confirmé</div>
+            <ul class="spiced-q-list">
+              <li>Envoyer le recap post-démo AUJOURD'HUI (résumé des cas d'usage identifiés)</li>
+              <li>"Suite à notre démo vendredi, quels modules vous ont le plus parlé ?"</li>
+              <li>"Quel est votre principal défi de collaboration aujourd'hui ?"</li>
+              <li>Proposer un essai gratuit 15j si intérêt confirmé</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /spiced-grid leads -->
+
+    </section>
+
+  </div>
+</div><!-- /tab-spiced -->
+
+
+<script>
+  function switchTab(tab) {
+    // Hide all tab content
+    document.querySelectorAll('.tab-content').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    // Remove active from all buttons
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    // Show the selected tab
+    document.getElementById('tab-' + tab).classList.add('active');
+    // Activate the corresponding button
+    var buttons = document.querySelectorAll('.tab-btn');
+    var idx = tab === 'forecast' ? 0 : tab === 'pipeline' ? 1 : tab === 'leads' ? 2 : 3;
+    buttons[idx].classList.add('active');
+  }
+</script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   TALKSPIRIT OWNERS — Tour de Contrôle live
+   Apps Script URL (déployée) — ne pas modifier
+   ══════════════════════════════════════════════════════════════ */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycPAipJ2LSAEoz4WtbVuvMqEBqJfPAa1YmHEu1gYlgvkT68RArlQw7MLTWFuxZ-EIuWg/exec';
+
+/* ── Config ─────────────────────────────────────────────────── */
+const TRIAL_MATCHERS = {
+  cetusia: ['cetusia'],
+  rhone:   ['rhone-digital', 'rhone', 'gosset', 'etienne']
+};
+const CACHE_KEY = 'talkspirit_owners_v2';
+const CACHE_TTL = 45 * 60 * 1000;
+
+/* ── UI helpers ─────────────────────────────────────────────── */
+function setBadge(cls, text) {
+  var b = document.getElementById('live-status-badge');
+  var l = document.getElementById('live-status-text');
+  if (!b || !l) return;
+  b.className = 'live-badge ' + cls;
+  var dot = b.querySelector('.live-dot');
+  if (dot) dot.className = 'live-dot' + (cls === 'live-wait' ? ' pulsing' : '');
+  l.textContent = text;
+}
+
+function loginClass(d) {
+  if (d === null || d === undefined) return 'll-never';
+  return d <= 1 ? 'll-ok' : d <= 3 ? 'll-ok' : d <= 7 ? 'll-warn' : 'll-danger';
+}
+function loginLabel(t) {
+  if (!t.last_login) return '<span class="live-login ll-never">Jamais connecté</span>';
+  var d = t.last_login_days_ago;
+  var txt = d === 0 ? 'Auj. ' + t.last_login : d === 1 ? 'Hier ' + t.last_login : 'Il y a ' + d + 'j — ' + t.last_login;
+  return '<span class="live-login ' + loginClass(d) + '">' + txt + '</span>';
+}
+
+function findTrial(trials, keys) {
+  return trials.find(function(t) {
+    var h = (t.instance + ' ' + t.domain).toLowerCase();
+    return keys.some(function(k) { return h.indexOf(k.toLowerCase()) !== -1; });
+  });
+}
+
+/* ── Engagement scoring ─────────────────────────────────────── */
+function calcScore(act) {
+  if (!act) return 0;
+  var m = act.members || 0, p = act.posts || 0, r = act.rooms || 0, c = act.chats || 0;
+  var ms = m <= 1 ? 0 : m <= 3 ? 15 : m <= 9 ? 30 : 40;
+  var ps = p === 0 ? 0 : p <= 5 ? 10 : p <= 20 ? 20 : 30;
+  var rs = r === 0 ? 0 : r <= 2 ? 10 : 20;
+  var cs = c === 0 ? 0 : c <= 10 ? 5 : 10;
+  return ms + ps + rs + cs;
+}
+function getStage(score) {
+  if (score <= 15) return { label:'Dormant',  emoji:'🔴', cls:'dormant',  desc:'Aucun impact livré — risque d\'abandon élevé' };
+  if (score <= 35) return { label:'Explorer', emoji:'🟡', cls:'explorer', desc:'Impact partiel — team pas encore engagée' };
+  if (score <= 55) return { label:'Actif',    emoji:'🟢', cls:'actif',    desc:'Impact en cours de livraison — use cases à confirmer' };
+  if (score <= 75) return { label:'Engagé',   emoji:'💪', cls:'engage',   desc:'Impact fort — valider ROI avant closing' };
+  return              { label:'Champion', emoji:'⭐', cls:'champion', desc:'Impact maximal — closer maintenant' };
+}
+
+/* ── Contact timeline ───────────────────────────────────────── */
+function parseDate(str) {
+  if (!str) return null;
+  var p = str.split('/');
+  if (p.length !== 3) return null;
+  return new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+}
+function fmtDate(d) {
+  return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth()+1)).slice(-2);
+}
+function getTimeline(t) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var expiry = parseDate(t.trial_end);
+  if (!expiry) return [];
+  var activation = parseDate(t.created_at);
+  if (!activation && t.trial_days) activation = new Date(expiry.getTime() - t.trial_days * 86400000);
+  if (!activation) activation = new Date(expiry.getTime() - 30 * 86400000);
+  var mid = new Date((activation.getTime() + expiry.getTime()) / 2);
+  var points = [
+    { key:'j2',  label:'J+2',      date: new Date(activation.getTime() + 2*86400000) },
+    { key:'j7',  label:'J+7',      date: new Date(activation.getTime() + 7*86400000) },
+    { key:'mid', label:'Mi-essai', date: mid },
+    { key:'d7',  label:'D-7',      date: new Date(expiry.getTime()    - 7*86400000) },
+    { key:'d2',  label:'D-2',      date: new Date(expiry.getTime()    - 2*86400000) }
+  ];
+  return points.map(function(p) {
+    var diff = Math.round((p.date - today) / 86400000);
+    var status = diff < -1 ? 'done' : diff <= 1 ? 'next' : diff <= 7 ? 'soon' : 'future';
+    return { key:p.key, label:p.label, date:fmtDate(p.date), diff:diff, status:status };
+  });
+}
+
+/* ── Message templates par segment ─────────────────────────── */
+function getMessage(key, stageKey, t) {
+  var act = t.activity || {};
+  var domain = '<b>' + (t.domain || 'votre espace') + '</b>';
+  var m = act.members || 0, p = act.posts || 0, r = act.rooms || 0, c = act.chats || 0;
+
+  var tpl = {
+    dormant: {
+      j2:  'Bonjour, votre espace ' + domain + ' est prêt. Avez-vous pu vous connecter ? Je suis dispo pour un onboarding express de 15 min cette semaine.',
+      j7:  'Votre espace ' + domain + ' attend votre équipe — aucune activité pour l\'instant. Un créneau de 15 min suffit pour démarrer ensemble. Je vous propose quand ?',
+      mid: 'On est à mi-parcours et je voulais m\'assurer que tout allait bien. Quel est votre plus grand frein pour l\'instant ?',
+      d7:  'Il reste 7 jours sur votre essai. Il n\'est pas trop tard — un démarrage tardif mène souvent à une très bonne décision. Qu\'est-ce qui vous a bloqué ?',
+      d2:  'Votre trial se termine dans 2 jours. Je ne veux pas vous perdre sans avoir eu l\'occasion de vous accompagner. On se parle aujourd\'hui ?'
+    },
+    explorer: {
+      j2:  'Bienvenue sur ' + domain + ' ! Vous avez commencé à explorer — avez-vous pu inviter d\'autres collaborateurs ?',
+      j7:  'Bonne exploration sur ' + domain + ' ! Avez-vous essayé les <b>salles thématiques</b> ? Elles remplacent parfaitement vos channels Slack pour organiser les sujets.',
+      mid: 'Mi-essai : ' + m + ' membre(s), ' + p + ' posts — vous êtes sur la bonne voie ! Voici ce que vous n\'avez probablement pas encore vu : <b>@mentions, épingles, intégration Drive</b>.',
+      d7:  'Il reste 7 jours — avec ' + m + ' membre(s), vous avez commencé. Qu\'est-ce qui vous ferait inviter toute votre équipe ?',
+      d2:  '2 jours restants — votre équipe a commencé à collaborer. Je vous prépare une offre adaptée à votre taille. Combien d\'utilisateurs ciblez-vous ?'
+    },
+    actif: {
+      j2:  'L\'espace ' + domain + ' est bien lancé — comment se passe la prise en main ?',
+      j7:  'Belle activité sur ' + domain + ' : <b>' + m + ' membres, ' + p + ' posts</b> ! Avez-vous exploré les intégrations (Google Drive, Outlook, Zapier) ?',
+      mid: 'Mi-essai et ' + domain + ' tourne bien : <b>' + m + ' membres, ' + p + ' posts, ' + r + ' salles</b>. Voici 3 fonctions sous-utilisées à ce stade : <b>recherche globale, fils de discussion, notifications smart</b>.',
+      d7:  'Beau bilan à J-7 : <b>' + m + ' membres, ' + p + ' posts</b>. Qu\'est-ce qui vous a le plus convaincu ? Je veux préparer une offre sur-mesure.',
+      d2:  'Votre équipe a adopté Talkspirit ! <b>' + m + ' membres actifs</b> — ça fait du sens de continuer. Je vous envoie notre meilleure offre cet après-midi ?'
+    },
+    engage: {
+      j2:  'Démarrage impressionnant sur ' + domain + ' ! Votre équipe est déjà très active — vous savez visiblement ce que vous cherchez.',
+      j7:  '<b>' + m + ' membres, ' + p + ' posts, ' + r + ' salles</b> en une semaine — belle adoption ! Avez-vous pensé aux <b>workflows automatisés</b> via Make ou Zapier pour aller encore plus loin ?',
+      mid: 'Mi-essai et ' + domain + ' est clairement adopté : <b>' + m + ' membres, ' + p + ' posts, ' + c + ' chats</b>. Comment évaluez-vous la valeur vs votre outil actuel ? J\'aimerais co-construire le ROI avec vous.',
+      d7:  'Bilan à J-7 : <b>' + m + ' membres, ' + p + ' posts, ' + r + ' salles, ' + c + ' chats</b>. Ça représente facilement plusieurs heures gagnées par semaine. On calcule le ROI ensemble avant votre décision ?',
+      d2:  'J-2 : adoption réelle avec <b>' + m + ' membres actifs</b>. Je vous envoie une offre Rise adaptée ce matin. On se parle cet après-midi pour finaliser ?'
+    },
+    champion: {
+      j2:  'Adoption record sur ' + domain + ' — votre équipe a immédiatement pris l\'outil en main. Je suis curieux de votre retour !',
+      j7:  '<b>' + m + ' membres, ' + p + ' posts</b> en une semaine — vous battez tous les records d\'adoption en trial ! Quand est-ce qu\'on anticipe la décision ?',
+      mid: 'Mi-essai exceptionnel : <b>' + m + ' membres, ' + p + ' posts, ' + r + ' salles</b> — votre équipe a voté avec les pieds. Je vous prépare une offre cette semaine avant même la fin du trial ?',
+      d7:  'Adoption maximale : <b>' + m + ' membres, ' + p + ' posts, ' + r + ' salles, ' + c + ' chats</b>. Je serais surpris que vous reveniez en arrière. On finalise ensemble ?',
+      d2:  'Vous êtes champions ! <b>' + m + ' membres actifs</b> et une adoption exemplaire. Offre en cours. On se parle aujourd\'hui ?'
+    }
+  };
+  var stMap = { dormant:'dormant', explorer:'explorer', actif:'actif', engage:'engage', champion:'champion' };
+  var msgs = tpl[stMap[stageKey]] || tpl.actif;
+  return msgs[key] || msgs.mid || Object.values(msgs)[0];
+}
+
+/* ── Render helpers ─────────────────────────────────────────── */
+function renderActivityGrid(act) {
+  act = act || {};
+  var rows = [
+    { icon:'👥', label:'Membres', val:act.members||0, hot:3 },
+    { icon:'📝', label:'Posts',   val:act.posts  ||0, hot:5 },
+    { icon:'🏠', label:'Salles',  val:act.rooms  ||0, hot:2 },
+    { icon:'💬', label:'Chats',   val:act.chats  ||0, hot:3 }
+  ];
+  var html = '<div class="activity-grid">';
+  rows.forEach(function(r) {
+    var cls = r.val === 0 ? 'am-cold' : r.val >= r.hot ? 'am-hot' : '';
+    html += '<div class="activity-metric ' + cls + '">'
+          + '<span class="am-icon">' + r.icon + '</span>'
+          + '<span class="am-value">' + r.val + '</span>'
+          + '<span class="am-label">' + r.label + '</span>'
+          + '</div>';
+  });
+  return html + '</div>';
+}
+
+function renderTimeline(tl) {
+  if (!tl.length) return '';
+  var html = '<div class="contact-timeline">';
+  tl.forEach(function(p) {
+    var dc = p.status === 'done' ? 'tl-done' : p.status === 'next' ? 'tl-next' : p.status === 'soon' ? 'tl-soon' : 'tl-future';
+    var icon = p.status === 'done' ? '✓' : p.status === 'next' ? '→' : p.status === 'soon' ? '!' : '·';
+    html += '<div class="tl-point">'
+          + '<div class="tl-dot ' + dc + '">' + icon + '</div>'
+          + '<div class="tl-label">' + p.label + '</div>'
+          + '<div class="tl-date">' + p.date + '</div>'
+          + '</div>';
+  });
+  return html + '</div>';
+}
+
+function renderRecommendation(t, stageKey, tl) {
+  var next = tl.find(function(p) { return p.status === 'next' || p.status === 'soon'; });
+  if (!next) next = tl.find(function(p) { return p.status === 'future'; });
+  if (!next) return '';
+  var msg = getMessage(next.key, stageKey, t);
+  var when = next.diff === 0 ? 'aujourd\'hui' : next.diff > 0 ? 'dans ' + next.diff + 'j' : 'à envoyer';
+  return '<div class="recommended-action">'
+       + '<div class="ra-header"><span>🎯</span>'
+       + '<span class="ra-title">Message Impact — ' + next.label + '</span>'
+       + '<span class="ra-date">' + next.date + ' (' + when + ')</span>'
+       + '</div>'
+       + '<div class="ra-message">' + msg + '</div>'
+       + '</div>';
+}
+
+function renderEngagement(t) {
+  var hasActivity = t.activity && (t.activity.members > 0 || t.activity.posts > 0 || t.activity.rooms > 0 || t.activity.chats > 0);
+  var score = calcScore(t.activity);
+  var stage = getStage(t.engagement_score !== undefined ? t.engagement_score : score);
+  var tl = getTimeline(t);
+
+  var html = '<div class="trial-engagement">';
+
+  // Score + stage
+  html += '<div class="eng-header-row">'
+        + '<div><div class="impact-label">Score d\'Impact WBD</div>'
+        + '<div class="eng-score ' + stage.cls + '">' + (t.engagement_score !== undefined ? t.engagement_score : score) + '</div></div>'
+        + '<div><div class="eng-stage">' + stage.emoji + ' ' + stage.label + '</div>'
+        + '<div class="eng-stage-sub">' + stage.desc + '</div></div>'
+        + '</div>';
+
+  // Activity grid
+  if (hasActivity) {
+    html += renderActivityGrid(t.activity);
+  } else {
+    html += '<div class="eng-nodata">Données d\'activité en attente — redéployer le Apps Script pour activer</div>';
+  }
+
+  // Timeline
+  html += renderTimeline(tl);
+
+  // Recommendation
+  html += renderRecommendation(t, stage.cls, tl);
+
+  return html + '</div>';
+}
+
+/* ── Main render ────────────────────────────────────────────── */
+function renderTrial(cardId, loginId, t) {
+  var loginEl = document.getElementById(loginId);
+  var engEl   = document.getElementById('engagement-' + cardId);
+  if (loginEl) loginEl.innerHTML = t ? loginLabel(t) : '<span class="live-login ll-never">Non trouvé dans le sheet</span>';
+  if (engEl)   engEl.innerHTML   = t ? renderEngagement(t) : '';
+}
+
+function applyData(data) {
+  var trials = data.trials || [];
+  renderTrial('cetusia', 'login-cetusia', findTrial(trials, TRIAL_MATCHERS.cetusia));
+  renderTrial('rhone',   'login-rhone',   findTrial(trials, TRIAL_MATCHERS.rhone));
+  setBadge('live-ok', '● Live — ' + data.generated_at);
+}
+
+/* ── Cache + fetch ──────────────────────────────────────────── */
+function loadLiveData() {
+  try {
+    var cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      var obj = JSON.parse(cached);
+      if (obj && obj.ts && (Date.now() - obj.ts) < CACHE_TTL && obj.data) {
+        applyData(obj.data);
+        setBadge('live-ok', '● Cache — ' + obj.data.generated_at);
+        fetchFromSheet(true);
+        return;
+      }
+    }
+  } catch(e) {}
+  fetchFromSheet(false);
+}
+
+function fetchFromSheet(silent) {
+  if (!silent) setBadge('live-wait', '⟳ Chargement…');
+  fetch(APPS_SCRIPT_URL)
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
+      applyData(data);
+    })
+    .catch(function(err) {
+      if (!silent) {
+        setBadge('live-err', '✕ ' + err.message);
+        try {
+          var cached = localStorage.getItem(CACHE_KEY);
+          if (cached) { var obj = JSON.parse(cached); if (obj && obj.data) applyData(obj.data); }
+        } catch(e2) {}
+      }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadLiveData);
+</script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   HOLASPIRIT OWNERS — Tour de Contrôle live
+   → Coller l'URL Apps Script après déploiement dans le Sheet Holaspirit
+   ══════════════════════════════════════════════════════════════ */
+const HOLA_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvq_FdrmkQ-E0bIkev8FEOjco0NgI_0kHG_Vg8eEtyAvwgvWIADMfO5kjLioUekJk/exec';
+
+const HOLA_CACHE_KEY = 'holaspirit_owners_v1';
+const HOLA_CACHE_TTL = 45 * 60 * 1000;
+
+function setHolaBadge(cls, text) {
+  var b = document.getElementById('hola-status-badge');
+  var l = document.getElementById('hola-status-text');
+  if (!b || !l) return;
+  b.className = 'live-badge ' + cls;
+  var dot = b.querySelector('.live-dot');
+  if (dot) dot.className = 'live-dot' + (cls === 'live-wait' ? ' pulsing' : '');
+  l.textContent = text;
+}
+
+function findHolaspiritLead(leads, firstName, lastName) {
+  var fn = firstName.toLowerCase(), ln = lastName.toLowerCase();
+  return leads.find(function(l) {
+    return (l.firstname || '').toLowerCase() === fn &&
+           (l.lastname  || '').toLowerCase() === ln;
+  });
+}
+
+function holaStage(ao) {
+  if (ao >= 50) return { label:'Champion ⭐', desc:'Adoption maximale — gouvernance pleinement opérationnelle' };
+  if (ao >= 20) return { label:'Engagé 💪', desc:'Processus holacracy bien ancrés — valider ROI avant closing' };
+  if (ao >= 5)  return { label:'Actif 🟢', desc:'Tensions traitées régulièrement — accompagner l’équipe' };
+  if (ao >= 1)  return { label:'Explorer 🟡', desc:'Début de gouvernance — s’assurer que l’équipe suit' };
+  return              { label:'Dormant 🔴', desc:'Aucune tension traitée — recontacter immédiatement' };
+}
+
+function renderHolaspiritCard(lead, hdrs) {
+  var aeValEl = document.getElementById('hola-ae-val');
+  var aoValEl = document.getElementById('hola-ao-val');
+  var aeLblEl = document.getElementById('hola-ae-label');
+  var aoLblEl = document.getElementById('hola-ao-label');
+  var aeBox   = document.getElementById('hola-ae-sabrina');
+  var aoBox   = document.getElementById('hola-ao-sabrina');
+  var scoreEl = document.getElementById('hola-score-sabrina');
+  var loginEl = document.getElementById('hola-login-sabrina');
+  var endEl   = document.getElementById('hola-trial-end-sabrina');
+
+  if (!lead) {
+    if (aeValEl) aeValEl.textContent = '?';
+    if (aoValEl) aoValEl.textContent = '?';
+    if (loginEl) loginEl.innerHTML = '<span class="live-login ll-never">Non trouvé</span>';
+    return;
+  }
+
+  var ae = lead.metric_ae || 0;
+  var ao = lead.metric_ao || 0;
+  var aeLabel = (hdrs && hdrs.col_ae) || 'Quantité';
+  var aoLabel = (hdrs && hdrs.col_ao) || 'Tensions acceptées';
+
+  if (aeLblEl) aeLblEl.textContent = aeLabel;
+  if (aoLblEl) aoLblEl.textContent = aoLabel;
+  if (aeValEl) { aeValEl.textContent = ae; if (ae > 0 && aeBox) aeBox.classList.add('active'); }
+  if (aoValEl) { aoValEl.textContent = ao; if (ao > 0 && aoBox) aoBox.classList.add('active'); }
+
+  var stage = holaStage(ao);
+  if (scoreEl) {
+    scoreEl.innerHTML = '<div class="hola-score-block">'
+      + '<div class="hola-score-val">' + ao + '</div>'
+      + '<div class="hola-score-info">'
+      + '<div class="hola-stage-label">' + stage.label + '</div>'
+      + '<div class="hola-stage-desc">' + stage.desc + '</div>'
+      + '</div></div>';
+  }
+
+  if (loginEl) {
+    loginEl.innerHTML = lead.last_login
+      ? '<span class="live-login ll-ok">' + lead.last_login + '</span>'
+      : '<span class="live-login ll-never">Non disponible</span>';
+  }
+  if (endEl) {
+    endEl.innerHTML = lead.trial_end
+      ? '<strong>' + lead.trial_end + '</strong>'
+      : '<span style="color:var(--muted)">Non disponible dans le sheet</span>';
+  }
+}
+
+function applyHolaspiritData(data) {
+  var leads   = data.leads || [];
+  var hdrs    = data.col_headers || {};
+  var sabrina = findHolaspiritLead(leads, 'sabrina', 'freiwald');
+  renderHolaspiritCard(sabrina, hdrs);
+  setHolaBadge('live-ok', '● Live — ' + data.generated_at);
+}
+
+function loadHolaspiritData() {
+  if (!HOLA_APPS_SCRIPT_URL) {
+    setHolaBadge('live-init', 'Apps Script non déployé');
+    return;
+  }
+  try {
+    var cached = localStorage.getItem(HOLA_CACHE_KEY);
+    if (cached) {
+      var obj = JSON.parse(cached);
+      if (obj && obj.ts && (Date.now() - obj.ts) < HOLA_CACHE_TTL && obj.data) {
+        applyHolaspiritData(obj.data);
+        setHolaBadge('live-ok', '● Cache — ' + obj.data.generated_at);
+        fetchFromHolaspiritSheet(true);
+        return;
+      }
+    }
+  } catch(e) {}
+  fetchFromHolaspiritSheet(false);
+}
+
+function fetchFromHolaspiritSheet(silent) {
+  if (!HOLA_APPS_SCRIPT_URL) return;
+  if (!silent) setHolaBadge('live-wait', '⟳ Chargement…');
+  fetch(HOLA_APPS_SCRIPT_URL)
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      try { localStorage.setItem(HOLA_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch(e) {}
+      applyHolaspiritData(data);
+    })
+    .catch(function(err) {
+      if (!silent) setHolaBadge('live-err', '✕ ' + err.message);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadHolaspiritData);
+</script>
+</body>
+</html>

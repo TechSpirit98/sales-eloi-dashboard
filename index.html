@@ -297,6 +297,14 @@
   .stage-solution  { background: #d1fae5; color: #065f46; }
   .stage-proposal  { background: #fef9c3; color: #92400e; }
   .stage-negotiation { background: #ffedd5; color: #9a3412; }
+  .deal-hs-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(67,97,238,0.4);
+    transition: color 0.15s;
+  }
+  .deal-hs-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .deal-hs-link::after { content: ' ↗'; font-size: 9px; opacity: 0.55; vertical-align: super; }
 
   /* ── STATUS BADGES ── */
   .status-badge {
@@ -1415,7 +1423,7 @@
 
             <!-- PROPOSAL SENT -->
             <tr style="background:#fff5f5;">
-              <td><strong>ICEDD [S&eacute;maw&eacute;]</strong><br><span style="font-size:11px;color:var(--muted)">Isabelle Piron</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/497521405118/" target="_blank" class="deal-hs-link">ICEDD [S&eacute;maw&eacute;]</a></strong><br><span style="font-size:11px;color:var(--muted)">Isabelle Piron</span></td>
               <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
               <td><span class="dm-badge dm-unknown">? D&eacute;cideur &agrave; confirmer</span></td>
               <td>&euro;250 ARR</td>
@@ -1435,7 +1443,7 @@
             </tr>
 
             <tr>
-              <td><strong>FortSchritt &#11088;</strong><br><span style="font-size:11px;color:#6d28d9">Sabrina Freiwald &mdash; fortschritt-bayern.de</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/498869513431/" target="_blank" class="deal-hs-link">FortSchritt &#11088;</a></strong><br><span style="font-size:11px;color:#6d28d9">Sabrina Freiwald &mdash; fortschritt-bayern.de</span></td>
               <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
               <td><span class="dm-badge dm-unknown">? Charg&eacute;e projet &mdash; CEO &agrave; qualifier</span></td>
               <td><strong>&euro;2 500 ARR</strong></td>
@@ -1455,7 +1463,7 @@
             </tr>
 
             <tr>
-              <td><strong>Mairie de Veigy-Foncenex</strong><br><span style="font-size:11px;color:var(--muted)">C&eacute;dric Donzel</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/500229155021/" target="_blank" class="deal-hs-link">Mairie de Veigy-Foncenex</a></strong><br><span style="font-size:11px;color:var(--muted)">C&eacute;dric Donzel</span></td>
               <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
               <td><span class="dm-badge dm-no">&#10007; Conseill&eacute; mun. &mdash; &eacute;lus valident</span></td>
               <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;6 000 / 40u)</span></td>
@@ -1475,7 +1483,7 @@
             </tr>
 
             <tr style="background:#fffbeb;">
-              <td><strong>Rh&ocirc;ne Digital &mdash; New Biz</strong><br><span style="font-size:11px;color:var(--muted)">Etienne GOSSET</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/498335302889/" target="_blank" class="deal-hs-link">Rh&ocirc;ne Digital &mdash; New Biz</a></strong><br><span style="font-size:11px;color:var(--muted)">Etienne GOSSET</span></td>
               <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
               <td><span class="dm-badge dm-yes">&#10003; PME &mdash; d&eacute;cideur</span></td>
               <td>&euro;200 ARR <span style="font-size:10px;color:var(--orange)">&#9888; Trial actif</span></td>
@@ -1495,7 +1503,7 @@
             </tr>
 
             <tr>
-              <td><strong>Cetusia</strong><br><span style="font-size:11px;color:var(--muted)">Temi Ifekoya + E. Elien (g&eacute;rant)</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/500277188842/" target="_blank" class="deal-hs-link">Cetusia</a></strong><br><span style="font-size:11px;color:var(--muted)">Temi Ifekoya + E. Elien (g&eacute;rant)</span></td>
               <td><span class="stage-badge stage-proposal">Proposal Sent</span></td>
               <td><span class="dm-badge dm-partial">&#9651; Champion Temi &mdash; E. Elien g&eacute;rant</span></td>
               <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;1 500 / 10u)</span></td>
@@ -1516,7 +1524,7 @@
 
             <!-- NEGOTIATION -->
             <tr>
-              <td><strong>[JP] ACE</strong><br><span style="font-size:11px;color:var(--muted)">Contact Japon</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/260818679025/" target="_blank" class="deal-hs-link">[JP] ACE</a></strong><br><span style="font-size:11px;color:var(--muted)">Contact Japon</span></td>
               <td><span class="stage-badge stage-negotiation">Negotiation</span></td>
               <td><span class="dm-badge dm-yes">&#10003; D&eacute;cideur confirm&eacute;</span></td>
               <td>&euro;154 ARR</td>
@@ -1537,7 +1545,7 @@
 
             <!-- SOLUTION FIT -->
             <tr>
-              <td><strong>NUCLETUDES</strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/321056109795/" target="_blank" class="deal-hs-link">NUCLETUDES</a></strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
               <td><span class="stage-badge stage-solution">Solution Fit</span></td>
               <td><span class="dm-badge dm-unknown">? &agrave; qualifier</span></td>
               <td>&euro;200 ARR</td>
@@ -1558,7 +1566,7 @@
 
             <!-- DISCOVERY COMPLETE -->
             <tr>
-              <td><strong>Materius</strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/496776000703/" target="_blank" class="deal-hs-link">Materius</a></strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
               <td><span class="stage-badge stage-discovery">Discovery Complete</span></td>
               <td><span class="dm-badge dm-unknown">? D&eacute;cideur &agrave; qualifier</span></td>
               <td>&euro;200 ARR</td>
@@ -1578,7 +1586,7 @@
             </tr>
 
             <tr>
-              <td><strong>UTBM &ndash; ArcInnoLab</strong><br><span style="font-size:11px;color:var(--muted)">Emmanuelle Chevalier</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/500315060459/" target="_blank" class="deal-hs-link">UTBM &ndash; ArcInnoLab</a></strong><br><span style="font-size:11px;color:var(--muted)">Emmanuelle Chevalier</span></td>
               <td><span class="stage-badge stage-discovery">Discovery Complete</span></td>
               <td><span class="dm-badge dm-no">&#10007; Charg&eacute;e projet &mdash; DSI/Direction</span></td>
               <td>TBD <span style="font-size:10px;color:var(--muted)">(est. &euro;8&ndash;20k)</span></td>
@@ -1599,7 +1607,7 @@
 
             <!-- DISCOVERY SCHEDULED (top 2) -->
             <tr>
-              <td><strong>J-eNOV</strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/314791782611/" target="_blank" class="deal-hs-link">J-eNOV</a></strong><br><span style="font-size:11px;color:var(--muted)">Nouveau Deal</span></td>
               <td><span class="stage-badge stage-discovery">Discovery Scheduled</span></td>
               <td><span class="dm-badge dm-unknown">? &agrave; qualifier</span></td>
               <td>&euro;254 ARR</td>
@@ -1619,7 +1627,7 @@
             </tr>
 
             <tr>
-              <td><strong>Labev</strong><br><span style="font-size:11px;color:var(--muted)">Thibaut &mdash; CODIR</span></td>
+              <td><strong><a href="https://app.hubspot.com/contacts/25761660/deal/373928126670/" target="_blank" class="deal-hs-link">Labev</a></strong><br><span style="font-size:11px;color:var(--muted)">Thibaut &mdash; CODIR</span></td>
               <td><span class="stage-badge stage-discovery">Discovery Scheduled</span></td>
               <td><span class="dm-badge dm-partial">&#9651; Champion Thibaut &mdash; CODIR d&eacute;cide</span></td>
               <td>&euro;261 ARR</td>

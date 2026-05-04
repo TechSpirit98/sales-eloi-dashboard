@@ -182,6 +182,33 @@ def enrich_leads(leads):
     return leads
 
 
+def fetch_deal_contact_ids(deals):
+    """Returns contact IDs already linked to an active deal — used to avoid lead/deal duplicates."""
+    ACTIVE_CATS = {"acq", "exp"}
+    active_ids = [
+        d["id"] for d in deals
+        if STAGE.get(d["properties"].get("dealstage", ""), ("", 0, ""))[2] in ACTIVE_CATS
+    ]
+    if not active_ids:
+        return set()
+    try:
+        r = requests.post(
+            f"{BASE}/crm/v4/associations/deals/contacts/batch/read",
+            headers=headers(),
+            json={"inputs": [{"id": did} for did in active_ids[:100]]}
+        )
+        if r.status_code not in (200, 207):
+            return set()
+        contact_ids = set()
+        for result in r.json().get("results", []):
+            for assoc in result.get("to", []):
+                contact_ids.add(str(assoc["toObjectId"]))
+        return contact_ids
+    except Exception as e:
+        print(f"  Warning fetch_deal_contact_ids: {e}")
+        return set()
+
+
 # ── SPICED Scoring ────────────────────────────────────────────────────────────
 def spiced_deal(d):
     p         = d["properties"]
@@ -926,6 +953,9 @@ def main():
 
     deals  = fetch_deals()
     leads  = fetch_leads()
+    deal_contact_ids = fetch_deal_contact_ids(deals)
+    leads  = [l for l in leads if l["id"] not in deal_contact_ids]
+    print(f"  → {len(leads)} leads after dedup (removed {100 - len(leads)} contacts already in active deals)")
     deals  = enrich_deals(deals)
     leads  = enrich_leads(leads)
 

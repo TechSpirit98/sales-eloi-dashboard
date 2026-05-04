@@ -1,0 +1,31 @@
+name: Refresh Dashboard
+
+on:
+  schedule:
+    - cron: '*/30 6-20 * * 1-5'   # toutes les 30min, 6h–20h, lun–ven
+  workflow_dispatch:               # déclenchement manuel possible
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install requests
+
+      - name: Generate dashboard
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+        run: python generate.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.email "dashboard-bot@talkspirit.com"
+          git config user.name "Dashboard Bot"
+          git add index.html
+          git diff --staged --quiet || git commit -m "chore: refresh $(date +'%d/%m %H:%M')"
+          git push

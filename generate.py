@@ -229,9 +229,11 @@ def spiced_deal(d):
     urgency = 2.0 if days_to_close <= 7  else \
               1.5 if days_to_close <= 14 else \
               1.2 if days_to_close <= 30 else 1.0
-    hot = round((total / 6) * (prob / 100) * recency * urgency * 10, 1)
+    pub = is_public(name)
+    hot = round((total / 6) * (prob / 100) * recency * urgency * 10 * (_PUBLIC_FACTOR if pub else 1.0), 1)
 
     return {"S": S, "P": P, "I": I, "C": C, "E": E, "D": D, "total": total, "hot": hot,
+            "pub": pub,
             "why": {"S": S_w, "P": P_w, "I": I_w, "C": C_w, "E": E_w, "D": D_w}}
 
 
@@ -268,9 +270,11 @@ def spiced_lead(l):
     recency = 1.0 if (lt and lt.get("days_ago", 999) <= 3)  else \
               0.8 if (lt and lt.get("days_ago", 999) <= 7)  else \
               0.5 if (lt and lt.get("days_ago", 999) <= 14) else 0.2
-    hot = round((total / 6) * prob * recency * 10, 1)
+    pub = is_public(p.get("company", "") or "")
+    hot = round((total / 6) * prob * recency * 10 * (_PUBLIC_FACTOR if pub else 1.0), 1)
 
     return {"S": S, "P": P, "I": I, "C": C, "E": E, "D": D, "total": total, "hot": hot,
+            "pub": pub,
             "why": {"S": S_w, "P": P_w, "I": I_w, "C": C_w, "E": E_w, "D": D_w}}
 
 
@@ -282,6 +286,27 @@ def days_open_from(raw):
         return (TODAY - dt).days
     except:
         return 999
+
+
+# ── Secteur public ─────────────────────────────────────────────────────────────
+_PUBLIC_KW = [
+    "mairie", "commune ", "ville de ", "département", "departement",
+    "région ", "region ", "préfecture", "sous-préfecture",
+    "métropole", "metropole", "agglomération", "agglomeration",
+    "communauté de communes", "communauté d'agglomération",
+    "conseil régional", "conseil départemental", "conseil général",
+    "sdis", "ccas", "collectivité",
+    "centre hospitalier", " chu ", "hôpital", "hopital",
+    "cpam", "caisse primaire", "académie de", "rectorat",
+    "ministère", "ministere", "direction régionale", "direction générale",
+    "cnrs", "inserm", "inria", "inrae",
+    "office de tourisme", "chambre de commerce", "chambre des métiers",
+]
+_PUBLIC_FACTOR = 0.55   # cycle de décision ~2× plus long → probabilité semaine réduite
+
+def is_public(text):
+    t = (text or "").lower()
+    return any(kw in t for kw in _PUBLIC_KW)
 
 
 # ── Metrics ───────────────────────────────────────────────────────────────────
@@ -840,8 +865,9 @@ function spicedRow(x){
   const hi=fireIds.has(x.id)?' class="highlight"':'';
   const name=x.kind==='deal'?x.name.replace(/- New Deal|- Nouvel.+|- Nouvel élément.+/i,'').trim():x.name;
 
-  // Type badge
+  // Type badge + public sector indicator
   const typeBadge=x.kind==='deal'?`<span class="type-badge type-deal">Deal</span>`:`<span class="type-badge type-lead">Lead</span>`;
+  const pubBadge=sp.pub?`<span title="Secteur public — cycle de décision plus long (×0.55 sur l'indice de closing)" style="font-size:11px;margin-left:5px;cursor:default" aria-label="Secteur public">🏛</span>`:``;
 
   // MRR or status
   const mrrOrStatus = x.kind==='deal'
@@ -866,7 +892,7 @@ function spicedRow(x){
   const dateClass = (x.overdue) ? 'overdue' : 'ok';
 
   return `<tr${hi}>
-    <td><div class="deal-name"><a href="${x.hs_url}" target="_blank">${name}</a></div><div class="deal-sub">${x.days_open}j</div></td>
+    <td><div class="deal-name"><a href="${x.hs_url}" target="_blank">${name}</a>${pubBadge}</div><div class="deal-sub">${x.days_open}j</div></td>
     <td>${typeBadge}</td>
     <td>${mrrOrStatus}</td>
     <td>${hotHTML}</td>

@@ -634,7 +634,13 @@ td{padding:10px 14px;vertical-align:middle}
     <div class="spark">✦</div>
     <span>Sales Dashboard — Eloi Lefebvre</span>
   </div>
-  <div class="topbar-meta">Mis à jour le __GENERATED_AT__</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="topbar-meta">Mis à jour le __GENERATED_AT__</div>
+    <button onclick="hardRefresh()" id="refresh-btn" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px 12px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+      <svg id="refresh-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Actualiser
+    </button>
+  </div>
 </div>
 
 <div class="container">
@@ -931,6 +937,19 @@ function spicedRow(x){
 }
 
 function fmt(n){return Number(n).toLocaleString('fr-FR');}
+
+function hardRefresh(){
+  const btn=document.getElementById('refresh-btn');
+  const icon=document.getElementById('refresh-icon');
+  btn.disabled=true;
+  icon.style.animation='spin .8s linear infinite';
+  const style=document.createElement('style');
+  style.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+  document.head.appendChild(style);
+  const url=new URL(window.location.href);
+  url.searchParams.set('t', Date.now());
+  window.location.replace(url.toString());
+}
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 renderKPIs();

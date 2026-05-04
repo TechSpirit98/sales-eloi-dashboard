@@ -5,6 +5,9 @@ on:
     - cron: '*/30 6-20 * * 1-5'   # toutes les 30min, 6h–20h, lun–ven
   workflow_dispatch:               # déclenchement manuel possible
 
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest

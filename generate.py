@@ -193,31 +193,32 @@ def enrich_leads(leads):
     return leads
 
 
-def fetch_deal_contact_ids(deals):
-    """Returns contact IDs already linked to an active deal — used to avoid lead/deal duplicates."""
-    ACTIVE_CATS = {"acq", "exp"}
-    active_ids = [
-        d["id"] for d in deals
-        if STAGE.get(d["properties"].get("dealstage", ""), ("", 0, ""))[2] in ACTIVE_CATS
-    ]
-    if not active_ids:
-        return set()
-    try:
-        r = requests.post(
-            f"{BASE}/crm/v4/associations/deals/contacts/batch/read",
-            headers=headers(),
-            json={"inputs": [{"id": did} for did in active_ids[:100]]}
-        )
-        if r.status_code not in (200, 207):
-            return set()
-        contact_ids = set()
-        for result in r.json().get("results", []):
-            for assoc in result.get("to", []):
-                contact_ids.add(str(assoc["toObjectId"]))
-        return contact_ids
-    except Exception as e:
-        print(f"  Warning fetch_deal_contact_ids: {e}")
-        return set()
+def filter_leads_without_deals(leads):
+    """Returns only leads that have NO associated deal in HubSpot — avoids lead/deal duplicates.
+    Checks directly from the contact side so it works regardless of which deals we fetched."""
+    if not leads:
+        return leads
+    contacts_with_deals = set()
+    # Process in chunks of 100 (API limit per batch call)
+    for i in range(0, len(leads), 100):
+        chunk = [{"id": l["id"]} for l in leads[i:i+100]]
+        try:
+            r = requests.post(
+                f"{BASE}/crm/v4/associations/contacts/deals/batch/read",
+                headers=headers(),
+                json={"inputs": chunk}
+            )
+            if r.status_code not in (200, 207):
+                continue
+            for result in r.json().get("results", []):
+                if result.get("to"):  # contact has at least one deal
+                    contacts_with_deals.add(str(result["from"]["id"]))
+        except Exception as e:
+            print(f"  Warning filter_leads_without_deals: {e}")
+    before = len(leads)
+    filtered = [l for l in leads if l["id"] not in contacts_with_deals]
+    print(f"  → {len(filtered)} leads after dedup (removed {before - len(filtered)} contacts already in a deal)")
+    return filtered
 
 
 # ── SPICED Scoring ────────────────────────────────────────────────────────────
@@ -1066,9 +1067,7 @@ def main():
 
     deals  = fetch_deals()
     leads  = fetch_leads()
-    deal_contact_ids = fetch_deal_contact_ids(deals)
-    leads  = [l for l in leads if l["id"] not in deal_contact_ids]
-    print(f"  → {len(leads)} leads after dedup (removed {100 - len(leads)} contacts already in active deals)")
+    leads  = filter_leads_without_deals(leads)
     deals  = enrich_deals(deals)
     leads  = enrich_leads(leads)
 

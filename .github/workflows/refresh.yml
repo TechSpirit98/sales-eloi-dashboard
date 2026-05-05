@@ -2,7 +2,7 @@ name: Refresh Dashboard
 
 on:
   schedule:
-    - cron: '*/30 6-20 * * 1-5'   # toutes les 30min, 6h–20h, lun–ven
+    - cron: '*/10 6-20 * * 1-5'   # toutes les 10min, 6h–20h, lun–ven
   workflow_dispatch:               # déclenchement manuel possible
 
 permissions:

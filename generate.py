@@ -625,6 +625,19 @@ td{padding:10px 14px;vertical-align:middle}
 .type-lead{background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE}
 .hidden{display:none}
 .footer{text-align:center;font-size:11px;color:var(--muted);padding:20px;font-family:'DM Mono',monospace}
+/* SPICED Questions panel */
+.q-row>td{padding:0;border:none}
+.q-panel{padding:14px 20px 16px;background:#FAFAF9;border-top:1px dashed var(--border)}
+.q-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.q-draft-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:12px 16px;font-size:12px;line-height:1.8;color:var(--slate);white-space:pre-wrap;font-family:'DM Sans',sans-serif;max-height:220px;overflow-y:auto}
+.q-actions{display:flex;gap:8px;margin-top:10px}
+.q-copy{padding:5px 16px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid var(--brand);color:var(--brand);background:transparent;transition:all .15s}
+.q-copy:hover{background:var(--brand);color:white}
+.q-copy.ok{background:var(--success);border-color:var(--success);color:white}
+.q-close-btn{padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:transparent}
+.q-close-btn:hover{border-color:var(--slate);color:var(--slate)}
+.q-toggle-btn{margin-left:6px;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;white-space:nowrap;transition:all .15s}
+.q-toggle-btn:hover{border-color:var(--brand);color:var(--brand)}
 </style>
 </head>
 <body>
@@ -891,6 +904,41 @@ function renderSpiced(){
   document.getElementById('spiced-tbody').innerHTML=rows.map(spicedRow).join('');
 }
 
+const SPICED_Q={
+  S:{deal:"Pourriez-vous me donner quelques précisions sur votre contexte ? Combien d'utilisateurs seraient concernés, et quels outils utilisez-vous actuellement ?",
+     lead:"Pourriez-vous me parler brièvement de votre organisation et de votre rôle dans ce projet ?"},
+  P:{deal:"Quels sont les principaux défis que vous cherchez à résoudre ? Qu'est-ce qui ne fonctionne pas bien avec votre organisation ou vos outils actuels ?",
+     lead:"Qu'est-ce qui vous a amené à chercher une solution comme Talkspirit ? Quels problèmes cherchez-vous à adresser ?"},
+  I:{deal:"Si ce projet aboutit, quel serait l'impact concret pour votre organisation — gain de temps, réduction de friction, meilleure coordination entre équipes ?",
+     lead:"Comment estimeriez-vous la valeur de ce projet pour votre organisation si vous le menez à bien ?"},
+  C:{deal:"Y a-t-il un événement particulier qui donne de l'urgence à ce projet — renouvellement de contrat, lancement, réorganisation interne, ou contrainte réglementaire ?",
+     lead:"Y a-t-il une échéance ou un déclencheur précis qui rend ce projet prioritaire pour vous en ce moment ?"},
+  E:{deal:"À quel horizon envisagez-vous de prendre une décision ? Avez-vous une date de démarrage idéale en tête ?",
+     lead:"À quel moment souhaiteriez-vous idéalement avancer sur ce projet ?"},
+  D:{deal:"Qui sera impliqué dans la décision finale de votre côté ? Y a-t-il un comité ou un processus de validation particulier à anticiper ?",
+     lead:"Qui d'autre sera impliqué dans ce projet ? Y a-t-il un décideur à intégrer dans nos échanges ?"}
+};
+const SPICED_LBL={S:'Situation',P:'Pain',I:'Impact',C:'Critical Event',E:'Expected Date',D:'Decision'};
+
+function toggleQ(id){const r=document.getElementById('q-'+id);if(r)r.classList.toggle('hidden');}
+
+function buildQDraft(x){
+  const sp=x.spiced, kind=x.kind;
+  const missing=['S','P','I','C','E','D'].filter(k=>sp[k]===0);
+  if(!missing.length) return 'Toutes les dimensions SPICED sont renseignées.';
+  const name=kind==='deal'?x.name.replace(/- New Deal|- Nouvel.+|- Nouvel élément.+/i,'').trim():x.name;
+  const qs=missing.map(k=>`• ${SPICED_LBL[k]}\n  ${SPICED_Q[k][kind]}`).join('\n\n');
+  return `Bonjour,\n\nAfin d'avancer au mieux sur votre projet, j'aurais quelques questions :\n\n${qs}\n\nMerci d'avance pour ces précisions.\n\nCordialement,\nEloi`;
+}
+
+function copyQDraft(id,xJson){
+  const x=JSON.parse(decodeURIComponent(xJson));
+  navigator.clipboard.writeText(buildQDraft(x)).then(()=>{
+    const btn=document.getElementById('qcopy-'+id);
+    if(btn){btn.textContent='✓ Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='Copier le draft';btn.classList.remove('ok');},2500);}
+  });
+}
+
 function spicedRow(x){
   const sp=x.spiced, lt=x.last_touch, days=lt?lt.days_ago:999;
   const tc=days>14?'hot':days>7?'warm':days<=7?'ok':'none';
@@ -924,6 +972,29 @@ function spicedRow(x){
   const dateStr = x.close || x.created || '—';
   const dateClass = (x.overdue) ? 'overdue' : 'ok';
 
+  // Questions button — only if there are missing dimensions
+  const missing=['S','P','I','C','E','D'].filter(k=>sp[k]===0);
+  const qBtn=missing.length>0
+    ? `<button class="q-toggle-btn" onclick="toggleQ('${x.id}')" title="Questions pour enrichir le SPICED">✉ ${missing.length} question${missing.length>1?'s':''}</button>`
+    : '';
+
+  // Questions panel (hidden by default)
+  const xJson=encodeURIComponent(JSON.stringify(x));
+  const draft=buildQDraft(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const qPanel=missing.length>0?`
+<tr id="q-${x.id}" class="q-row hidden">
+  <td colspan="8">
+    <div class="q-panel">
+      <div class="q-label">Questions à poser pour enrichir le SPICED — ${missing.map(k=>SPICED_LBL[k]).join(', ')}</div>
+      <div class="q-draft-box">${draft}</div>
+      <div class="q-actions">
+        <button id="qcopy-${x.id}" class="q-copy" onclick="copyQDraft('${x.id}','${xJson}')">Copier le draft</button>
+        <button class="q-close-btn" onclick="toggleQ('${x.id}')">Fermer</button>
+      </div>
+    </div>
+  </td>
+</tr>`:'';
+
   return `<tr${hi}>
     <td><div class="deal-name"><a href="${x.hs_url}" target="_blank">${name}</a>${pubBadge}</div><div class="deal-sub">${x.days_open}j</div></td>
     <td>${typeBadge}</td>
@@ -932,8 +1003,8 @@ function spicedRow(x){
     <td>${spicedHTML}</td>
     <td><span class="close-date ${dateClass}">${dateStr}${x.overdue?' ⚠':''}</span></td>
     <td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td>
-    <td><a class="hs-link" href="${x.hs_url}" target="_blank">↗</a></td>
-  </tr>`;
+    <td style="white-space:nowrap"><a class="hs-link" href="${x.hs_url}" target="_blank">↗</a>${qBtn}</td>
+  </tr>${qPanel}`;
 }
 
 function fmt(n){return Number(n).toLocaleString('fr-FR');}

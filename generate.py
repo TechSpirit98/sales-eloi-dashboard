@@ -1138,14 +1138,14 @@ function switchView(view, btn) {
 function filterDeals(f,btn){dealFilter=f;document.querySelectorAll('#view-deals .tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderDeals();}
 function sortDeals(k){if(dealSort===k)dealAsc=!dealAsc;else{dealSort=k;dealAsc=false;}document.querySelectorAll('#view-deals thead th').forEach(th=>{th.classList.remove('sorted','asc');if(th.getAttribute('onclick')===`sortDeals('${k}')`){th.classList.add('sorted');if(dealAsc)th.classList.add('asc');}});renderDeals();}
 function renderDeals(){
-  let rows=[...DEALS];
+  let rows=DEALS.filter(d=>d.cat!=='dead');
   if(dealFilter==='acq') rows=rows.filter(d=>d.cat==='acq');
   else if(dealFilter==='exp') rows=rows.filter(d=>d.cat==='exp');
   else if(dealFilter==='fire') rows=rows.filter(d=>fireIds.has(d.id)||(d.last_touch&&d.last_touch.days_ago>7)||d.overdue||!d.next_step);
   else if(dealFilter==='spiced') rows=rows.filter(d=>d.spiced.total>=3);
   rows.sort((a,b)=>{let av=a[dealSort]??'',bv=b[dealSort]??'';if(dealSort==='amount'){av=a.amount;bv=b.amount;}if(dealSort==='close'){av=a.close||'9999';bv=b.close||'9999';}if(dealSort==='spiced_total'){av=a.spiced.total;bv=b.spiced.total;}const c=av<bv?-1:av>bv?1:0;return dealAsc?c:-c;});
   document.getElementById('deals-title').textContent=`Deals actifs (${rows.length})`;
-  document.getElementById('deals-count').textContent=`(${DEALS.length})`;
+  document.getElementById('deals-count').textContent=`(${rows.length})`;
   document.getElementById('deals-tbody').innerHTML=rows.map(dealRow).join('');
 }
 function dealRow(d){
@@ -1193,7 +1193,7 @@ function sortSpiced(k){if(spicedSort===k)spicedAsc=!spicedAsc;else{spicedSort=k;
 
 function renderSpiced(){
   const recent21 = [...DEALS,...LEADS].filter(x=>x.days_open<=21);
-  let rows=[...recent21];
+  let rows=recent21.filter(x=>x.cat!=='dead');
   if(spicedFilter==='deal') rows=rows.filter(x=>x.kind==='deal');
   else if(spicedFilter==='lead') rows=rows.filter(x=>x.kind==='lead');
   else if(spicedFilter==='hot') rows=rows.filter(x=>x.spiced.hot>=3);

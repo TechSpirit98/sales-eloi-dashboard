@@ -891,6 +891,7 @@ td{padding:10px 14px;vertical-align:middle}
           <th onclick="sortSpiced('spiced_total')">SPICED</th>
           <th onclick="sortSpiced('close')">Échéance</th>
           <th>Dernier touch</th>
+          <th>Next step</th>
           <th></th>
         </tr></thead><tbody id="spiced-tbody"></tbody></table>
       </div>
@@ -1182,7 +1183,7 @@ function copyQDraft(id,xJson){
 }
 
 function spicedRow(x){
-  const sp=x.spiced, lt=x.last_touch, days=lt?lt.days_ago:999;
+  const sp=x.spiced, lt=x.last_touch, ns=x.next_step, days=lt?lt.days_ago:999;
   const tc=days>14?'hot':days>7?'warm':days<=7?'ok':'none';
   const icon=lt?(lt.channel==='email'?'📧':'📞'):'—';
   const hi=fireIds.has(x.id)?' class="highlight"':'';
@@ -1214,6 +1215,11 @@ function spicedRow(x){
   const dateStr = x.close || x.created || '—';
   const dateClass = (x.overdue) ? 'overdue' : 'ok';
 
+  // Next step
+  const nsHTML=ns
+    ?`<div class="ns-subject">${ns.subject}</div><div class="ns-due ${ns.overdue?'overdue':'ok'}">${ns.due_date?(ns.overdue?'⚠ ':'')+ns.due_date:'Pas de date'}</div>`
+    :`<div class="ns-empty">Aucun next step</div>`;
+
   // Questions button — only if there are missing dimensions
   const missing=['S','P','I','C','E','D'].filter(k=>sp[k]===0);
   const qBtn=missing.length>0
@@ -1225,7 +1231,7 @@ function spicedRow(x){
   const draft=buildQDraft(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const qPanel=missing.length>0?`
 <tr id="q-${x.id}" class="q-row hidden">
-  <td colspan="8">
+  <td colspan="9">
     <div class="q-panel">
       <div class="q-label">Questions à poser pour enrichir le SPICED — ${missing.map(k=>SPICED_LBL[k]).join(', ')}</div>
       <div class="q-draft-box">${draft}</div>
@@ -1245,6 +1251,7 @@ function spicedRow(x){
     <td>${spicedHTML}</td>
     <td><span class="close-date ${dateClass}">${dateStr}${x.overdue?' ⚠':''}</span></td>
     <td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td>
+    <td><div class="next-step">${nsHTML}</div></td>
     <td style="white-space:nowrap"><a class="hs-link" href="${x.hs_url}" target="_blank">↗</a>${qBtn}</td>
   </tr>${qPanel}`;
 }

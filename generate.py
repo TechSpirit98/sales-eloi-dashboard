@@ -119,18 +119,29 @@ def fetch_engagements(obj_type, obj_id):
 def fetch_deals():
     print("Fetching deals...")
     props = ["dealname","amount","dealstage","closedate","pipeline",
-             "hubspot_owner_id","hs_lastmodifieddate","createdate"]
+             "hubspot_owner_id","hs_lastmodifieddate","createdate","deal_archived"]
     payload = {
         "filterGroups": [{"filters": [
-            {"propertyName": "hubspot_owner_id", "operator": "EQ", "value": OWNER}
+            {"propertyName": "hubspot_owner_id", "operator": "EQ", "value": OWNER},
+            {"propertyName": "deal_archived", "operator": "NEQ", "value": "true"}
         ]}],
         "properties": props,
         "sorts": [{"propertyName": "amount", "direction": "DESCENDING"}],
         "limit": 100
     }
-    r = requests.post(f"{BASE}/crm/v3/objects/deals/search", headers=headers(), json=payload)
-    r.raise_for_status()
-    deals = r.json().get("results", [])
+    deals = []
+    after = None
+    while True:
+        if after:
+            payload["after"] = after
+        r = requests.post(f"{BASE}/crm/v3/objects/deals/search", headers=headers(), json=payload)
+        r.raise_for_status()
+        data = r.json()
+        deals.extend(data.get("results", []))
+        paging = data.get("paging", {}).get("next", {})
+        after = paging.get("after")
+        if not after:
+            break
     print(f"  → {len(deals)} deals")
     return deals
 

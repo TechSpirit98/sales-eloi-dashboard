@@ -694,6 +694,7 @@ td{padding:10px 14px;vertical-align:middle}
           <button class="tab" onclick="filterDeals('acq',this)">New Biz</button>
           <button class="tab" onclick="filterDeals('exp',this)">AM / Renewal</button>
           <button class="tab" onclick="filterDeals('fire',this)">🔴 Urgents</button>
+          <button class="tab" onclick="filterDeals('spiced',this)">✦ SPICED ≥ 3</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -704,6 +705,7 @@ td{padding:10px 14px;vertical-align:middle}
           <th onclick="sortDeals('close')">Close</th>
           <th>Dernier touch</th>
           <th>Next step</th>
+          <th onclick="sortDeals('spiced_total')">SPICED</th>
           <th></th>
         </tr></thead><tbody id="deals-tbody"></tbody></table>
       </div>
@@ -719,6 +721,7 @@ td{padding:10px 14px;vertical-align:middle}
           <button class="tab" onclick="filterLeads('IN_PROGRESS',this)">En cours</button>
           <button class="tab" onclick="filterLeads('CONNECTED',this)">Connectés</button>
           <button class="tab" onclick="filterLeads('fire',this)">🔴 Urgents</button>
+          <button class="tab" onclick="filterLeads('spiced',this)">✦ SPICED ≥ 3</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -729,6 +732,7 @@ td{padding:10px 14px;vertical-align:middle}
           <th onclick="sortLeads('created')">Entré</th>
           <th>Dernier touch</th>
           <th>Next step</th>
+          <th onclick="sortLeads('spiced_total')">SPICED</th>
           <th></th>
         </tr></thead><tbody id="leads-tbody"></tbody></table>
       </div>
@@ -851,7 +855,8 @@ function renderDeals(){
   if(dealFilter==='acq') rows=rows.filter(d=>d.cat==='acq');
   else if(dealFilter==='exp') rows=rows.filter(d=>d.cat==='exp');
   else if(dealFilter==='fire') rows=rows.filter(d=>fireIds.has(d.id)||(d.last_touch&&d.last_touch.days_ago>7)||d.overdue||!d.next_step);
-  rows.sort((a,b)=>{let av=a[dealSort]??'',bv=b[dealSort]??'';if(dealSort==='amount'){av=a.amount;bv=b.amount;}if(dealSort==='close'){av=a.close||'9999';bv=b.close||'9999';}const c=av<bv?-1:av>bv?1:0;return dealAsc?c:-c;});
+  else if(dealFilter==='spiced') rows=rows.filter(d=>d.spiced.total>=3);
+  rows.sort((a,b)=>{let av=a[dealSort]??'',bv=b[dealSort]??'';if(dealSort==='amount'){av=a.amount;bv=b.amount;}if(dealSort==='close'){av=a.close||'9999';bv=b.close||'9999';}if(dealSort==='spiced_total'){av=a.spiced.total;bv=b.spiced.total;}const c=av<bv?-1:av>bv?1:0;return dealAsc?c:-c;});
   document.getElementById('deals-title').textContent=`Deals actifs (${rows.length})`;
   document.getElementById('deals-count').textContent=`(${DEALS.length})`;
   document.getElementById('deals-tbody').innerHTML=rows.map(dealRow).join('');
@@ -864,7 +869,10 @@ function dealRow(d){
   const name=d.name.replace(/- New Deal|- Nouvel.+|- Nouvel élément.+/i,'').trim();
   const hi=fireIds.has(d.id)?' class="highlight"':'';
   const nsHTML=ns?`<div class="ns-subject">${ns.subject}</div><div class="ns-due ${ns.overdue?'overdue':'ok'}">${ns.due_date?(ns.overdue?'⚠ ':'')+ns.due_date:'Pas de date'}</div>`:`<div class="ns-empty">Aucun next step</div>`;
-  return `<tr${hi}><td><div class="deal-name"><a href="${d.hs_url}" target="_blank">${name}</a></div><div class="deal-sub">${d.pipeline}</div></td><td><span class="mrr">${fmt(d.amount)} €</span></td><td><span class="stage-badge ${sc}">${d.stage}</span></td><td><span class="close-date ${d.overdue?'overdue':'ok'}">${d.close||'—'}${d.overdue?' ⚠':''}</span></td><td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td><td><div class="next-step">${nsHTML}</div></td><td><a class="hs-link" href="${d.hs_url}" target="_blank">↗</a></td></tr>`;
+  const dSp=d.spiced;
+  const dDims=['S','P','I','C','E','D'].map(k=>`<span class="sd ${dSp[k]?'on':'off'}" data-tip="${dSp.why[k]}">${k}</span>`).join('');
+  const dSpHTML=`<div class="spiced-dims">${dDims}<span class="sd-score ${dSp.total>=5?'full':''}">${dSp.total}/6</span></div>`;
+  return `<tr${hi}><td><div class="deal-name"><a href="${d.hs_url}" target="_blank">${name}</a></div><div class="deal-sub">${d.pipeline}</div></td><td><span class="mrr">${fmt(d.amount)} €</span></td><td><span class="stage-badge ${sc}">${d.stage}</span></td><td><span class="close-date ${d.overdue?'overdue':'ok'}">${d.close||'—'}${d.overdue?' ⚠':''}</span></td><td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td><td><div class="next-step">${nsHTML}</div></td><td>${dSpHTML}</td><td><a class="hs-link" href="${d.hs_url}" target="_blank">↗</a></td></tr>`;
 }
 
 // ── Leads ─────────────────────────────────────────────────────────────────────
@@ -873,8 +881,9 @@ function sortLeads(k){if(leadSort===k)leadAsc=!leadAsc;else{leadSort=k;leadAsc=f
 function renderLeads(){
   let rows=[...LEADS];
   if(leadFilter==='fire') rows=rows.filter(l=>fireIds.has(l.id)||(l.last_touch&&l.last_touch.days_ago>7)||!l.next_step);
+  else if(leadFilter==='spiced') rows=rows.filter(l=>l.spiced.total>=3);
   else if(leadFilter!=='all') rows=rows.filter(l=>l.status===leadFilter);
-  rows.sort((a,b)=>{let av=a[leadSort]??'',bv=b[leadSort]??'';const c=av<bv?-1:av>bv?1:0;return leadAsc?c:-c;});
+  rows.sort((a,b)=>{let av=a[leadSort]??'',bv=b[leadSort]??'';if(leadSort==='spiced_total'){av=a.spiced.total;bv=b.spiced.total;}const c=av<bv?-1:av>bv?1:0;return leadAsc?c:-c;});
   document.getElementById('leads-title').textContent=`Leads en qualification (${rows.length})`;
   document.getElementById('leads-count').textContent=`(${LEADS.length})`;
   document.getElementById('leads-tbody').innerHTML=rows.map(leadRow).join('');
@@ -885,7 +894,10 @@ function leadRow(l){
   const icon=lt?(lt.channel==='email'?'📧':'📞'):'—';
   const hi=fireIds.has(l.id)?' class="highlight"':'';
   const nsHTML=ns?`<div class="ns-subject">${ns.subject}</div><div class="ns-due ${ns.overdue?'overdue':'ok'}">${ns.due_date?(ns.overdue?'⚠ ':'')+ns.due_date:'Pas de date'}</div>`:`<div class="ns-empty">Aucun next step</div>`;
-  return `<tr${hi}><td><div class="deal-name"><a href="${l.hs_url}" target="_blank">${l.name}</a></div><div class="deal-sub">${l.jobtitle||''}</div></td><td><div style="font-weight:500;font-size:12px">${l.company||'—'}</div></td><td><span class="stage-badge" style="background:${l.status_bg};color:${l.status_color};border:1px solid ${l.status_border}">${l.status_label}</span></td><td><span class="close-date ok">${l.created||'—'}</span></td><td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td><td><div class="next-step">${nsHTML}</div></td><td><a class="hs-link" href="${l.hs_url}" target="_blank">↗</a></td></tr>`;
+  const lSp=l.spiced;
+  const lDims=['S','P','I','C','E','D'].map(k=>`<span class="sd ${lSp[k]?'on':'off'}" data-tip="${lSp.why[k]}">${k}</span>`).join('');
+  const lSpHTML=`<div class="spiced-dims">${lDims}<span class="sd-score ${lSp.total>=5?'full':''}">${lSp.total}/6</span></div>`;
+  return `<tr${hi}><td><div class="deal-name"><a href="${l.hs_url}" target="_blank">${l.name}</a></div><div class="deal-sub">${l.jobtitle||''}</div></td><td><div style="font-weight:500;font-size:12px">${l.company||'—'}</div></td><td><span class="stage-badge" style="background:${l.status_bg};color:${l.status_color};border:1px solid ${l.status_border}">${l.status_label}</span></td><td><span class="close-date ok">${l.created||'—'}</span></td><td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td><td><div class="next-step">${nsHTML}</div></td><td>${lSpHTML}</td><td><a class="hs-link" href="${l.hs_url}" target="_blank">↗</a></td></tr>`;
 }
 
 // ── SPICED ────────────────────────────────────────────────────────────────────

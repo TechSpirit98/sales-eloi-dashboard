@@ -872,6 +872,7 @@ td{padding:10px 14px;vertical-align:middle}
         <button class="view-tab active" onclick="switchView('deals',this)">Deals <span id="deals-count"></span></button>
         <button class="view-tab" onclick="switchView('leads',this)">Leads <span id="leads-count"></span></button>
         <button class="view-tab" onclick="switchView('spiced',this)">✦ SPICED — Récents <span id="spiced-count"></span></button>
+        <button class="view-tab" onclick="switchView('nodecision',this)">🕐 No Decision <span id="nodecision-count"></span></button>
       </div>
     </div>
 
@@ -961,6 +962,25 @@ td{padding:10px 14px;vertical-align:middle}
           <th>Next step</th>
           <th></th>
         </tr></thead><tbody id="spiced-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- No Decision -->
+    <div id="view-nodecision" class="hidden">
+      <div class="table-header">
+        <h2 id="nodecision-title">No Decision — Relances long terme</h2>
+        <div style="font-size:11px;color:var(--muted);padding-top:4px">Deals en pause · relance recommandée à 6–12 mois du dernier touch</div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th onclick="sortND('name')">Nom</th>
+          <th onclick="sortND('amount')">MRR</th>
+          <th>SPICED</th>
+          <th onclick="sortND('close')">Close date</th>
+          <th>Dernier touch</th>
+          <th>Relance recommandée</th>
+          <th></th>
+        </tr></thead><tbody id="nodecision-tbody"></tbody></table>
       </div>
     </div>
 
@@ -1131,7 +1151,8 @@ function drillBowtie(kind, key, label) {
 function switchView(view, btn) {
   document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['deals','leads','spiced'].forEach(v=>document.getElementById('view-'+v).classList.toggle('hidden',v!==view));
+  ['deals','leads','spiced','nodecision'].forEach(v=>document.getElementById('view-'+v).classList.toggle('hidden',v!==view));
+  if(view==='nodecision') renderND();
 }
 
 // ── Deals ─────────────────────────────────────────────────────────────────────
@@ -1321,6 +1342,50 @@ function spicedRow(x){
     <td><div class="next-step">${nsHTML}</div></td>
     <td style="white-space:nowrap"><a class="hs-link" href="${x.hs_url}" target="_blank">↗</a>${qBtn}</td>
   </tr>${qPanel}`;
+}
+
+// ── No Decision ──────────────────────────────────────────────────────────────
+let ndSort='days_ago', ndAsc=false;
+function sortND(k){if(ndSort===k)ndAsc=!ndAsc;else{ndSort=k;ndAsc=false;}renderND();}
+function renderND(){
+  let rows=DEALS.filter(d=>d.cat==='dead');
+  rows.sort((a,b)=>{
+    let av,bv;
+    if(ndSort==='amount'){av=a.amount;bv=b.amount;}
+    else if(ndSort==='close'){av=a.close||'9999';bv=b.close||'9999';}
+    else if(ndSort==='days_ago'){av=a.last_touch?a.last_touch.days_ago:9999;bv=b.last_touch?b.last_touch.days_ago:9999;}
+    else{av=a[ndSort]??'';bv=b[ndSort]??'';}
+    const c=av<bv?-1:av>bv?1:0;return ndAsc?c:-c;
+  });
+  document.getElementById('nodecision-title').textContent=`No Decision — ${rows.length} deal${rows.length>1?'s':''} en pause`;
+  document.getElementById('nodecision-count').textContent=`(${rows.length})`;
+  document.getElementById('nodecision-tbody').innerHTML=rows.map(d=>{
+    const lt=d.last_touch, days=lt?lt.days_ago:999;
+    const icon=lt?(lt.channel==='email'?'📧':'📞'):'—';
+    const tc=days>180?'hot':days>90?'warm':'ok';
+    const name=d.name.replace(/- New Deal|- Nouvel.+|- Nouvel élément.+/i,'').trim();
+    const sp=d.spiced;
+    const dims=['S','P','I','C','E','D'].map(k=>`<span class="sd ${sp[k]?'on':'off'}">${k}</span>`).join('');
+    // Relance recommandée = last touch + 6 months
+    let relanceStr='—', relanceColor='var(--muted)', relanceDue=false;
+    if(lt){
+      const relanceDays=180-days;
+      if(relanceDays<=0){relanceStr='À relancer';relanceColor='var(--error)';relanceDue=true;}
+      else if(relanceDays<=30){relanceStr=`Dans ${relanceDays}j`;relanceColor='var(--warning)';}
+      else{relanceStr=`Dans ${relanceDays}j`;relanceColor='var(--muted)';}
+    }
+    const ns=d.next_step;
+    const nsHTML=ns?`<div class="ns-subject" style="font-size:10px">${ns.subject.slice(0,50)}</div>`:'';
+    return `<tr>
+      <td><div class="deal-name"><a href="${d.hs_url}" target="_blank">${name}</a></div><div class="deal-sub">${d.pipeline}</div></td>
+      <td><span class="mrr">${fmt(d.amount)} €</span></td>
+      <td><div class="spiced-dims">${dims}<span class="sd-score">${sp.total}/6</span></div></td>
+      <td><span class="close-date ok">${d.close||'—'}</span></td>
+      <td><div class="touch ${tc}"><div><span>${icon}</span> <span class="touch-days">${days<999?days+'j':'jamais'}</span></div><div class="touch-label">${lt?lt.label:''}</div></div></td>
+      <td style="font-weight:500;font-size:12px;color:${relanceColor}">${relanceStr}${nsHTML}</td>
+      <td><a class="hs-link" href="${d.hs_url}" target="_blank">↗</a></td>
+    </tr>`;
+  }).join('');
 }
 
 function fmt(n){return Number(n).toLocaleString('fr-FR');}

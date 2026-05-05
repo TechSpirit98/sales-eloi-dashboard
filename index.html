@@ -400,8 +400,10 @@ function renderKPIs() {
 // ── Alerts ────────────────────────────────────────────────────────────────────
 function renderAlerts() {
   const {fire,warn,no_step,no_decision} = METRICS.alerts;
+  const proposalGhost = DEALS.filter(d => d.stage_id === "3112501456" && (!d.last_touch || d.last_touch.days_ago > 5));
   const rows = [];
   if (fire.length) rows.push(`<div class="alert-row fire"><span class="alert-title">🔴 Inactifs >14j</span><div class="alert-chips">${fire.map(chip).join('')}</div></div>`);
+  if (proposalGhost.length) rows.push(`<div class="alert-row fire"><span class="alert-title">👻 Devis sans réponse >5j</span><div class="alert-chips">${proposalGhost.map(chip).join('')}</div></div>`);
   if (warn.length) rows.push(`<div class="alert-row warn"><span class="alert-title">🟡 Inactifs 7–14j</span><div class="alert-chips">${warn.map(chip).join('')}</div></div>`);
   if (no_decision.length) rows.push(`<div class="alert-row fire"><span class="alert-title">⚠️ No Decision</span><div class="alert-chips">${no_decision.map(chip).join('')}</div></div>`);
   if (no_step.length) rows.push(`<div class="alert-row info"><span class="alert-title">📋 Sans next step</span><div class="alert-chips">${no_step.map(chip).join('')}</div></div>`);
@@ -418,18 +420,18 @@ function renderBowtie() {
   const acqBuckets = [
     {
       ids: ["3112501453","3112501454"],
-      label: "Qualification",
-      tip: "Pas encore de devis envoyé. On explore le besoin, cartographie les enjeux et vérifie l'adéquation avec Talkspirit. Le prospect est dans le cycle mais la valeur du deal n'est pas encore confirmée."
+      label: "Call booké",
+      tip: "Le lead a réservé un créneau suite à l'email d'accueil envoyé dans l'heure. Le call de découverte est planifié ou vient de se tenir — c'est le point d'entrée du pipeline New Biz."
     },
     {
       ids: ["3112501455"],
-      label: "Validation",
-      tip: "Le fit produit/besoin est confirmé et la démo a convaincu. On construit maintenant la proposition commerciale chiffrée."
+      label: "Fit confirmé",
+      tip: "Le call a eu lieu et l'adéquation Talkspirit/besoin est validée. Prochaine étape : préparer la proposition ET booker un second call pour la présenter en live — ne jamais envoyer le devis sans appel de présentation."
     },
     {
       ids: ["3112501456","3112501457"],
-      label: "Closing",
-      tip: "Devis envoyé ou conditions en cours de négociation. Le prospect a un chiffrage entre les mains — c'est la dernière ligne droite avant Won ou Lost."
+      label: "Proposal",
+      tip: "Devis envoyé ou en négociation. Point de friction principal : les prospects ghostent ici. Si aucune activité depuis >5j → relancer avec un lien calendrier, pas un email de suivi."
     }
   ];
   const eO=["462257366","462257390","462257370"];

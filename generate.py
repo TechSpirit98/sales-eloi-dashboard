@@ -536,7 +536,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--slate)
 .topbar-meta{font-size:11px;color:#B09080;font-family:'DM Mono',monospace}
 .container{max-width:1500px;margin:0 auto;padding:24px 28px}
 /* KPIs */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
 .kpi{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:18px 20px}
 .kpi-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
 .kpi-value{font-size:24px;font-weight:600;color:var(--slate);letter-spacing:-.5px}
@@ -826,8 +826,14 @@ function renderKPIs() {
   const noDec = METRICS.alerts.no_decision.length;
   const urg   = fire + noDec;
   const recent = [...DEALS,...LEADS].filter(x=>x.days_open<=21).length;
+  const lc = METRICS.lead_counts;
+  const newCount = lc.NEW || 0;
+  const reactivityPct = newCount === 0 ? 100 : Math.round((1 - newCount / METRICS.total_leads) * 100);
+  const reactivityLabel = newCount === 0 ? '100% inbounds traités' : `${newCount} en attente`;
+  const reactivityColor = newCount === 0 ? 'var(--success)' : 'var(--warning)';
   document.getElementById('kpi-row').innerHTML = `
     <div class="kpi"><div class="kpi-label">Leads actifs</div><div class="kpi-value brand">${METRICS.total_leads}</div><div class="kpi-sub">NEW · IN_PROGRESS · CONNECTED</div></div>
+    <div class="kpi"><div class="kpi-label">Réactivité inbound</div><div class="kpi-value" style="color:${reactivityColor}">${newCount === 0 ? '✓ 0' : newCount} NEW</div><div class="kpi-sub">${reactivityLabel}</div></div>
     <div class="kpi"><div class="kpi-label">Pipeline MRR</div><div class="kpi-value">${fmt(METRICS.total_pipeline)} €</div><div class="kpi-sub">/mois brut deals actifs</div></div>
     <div class="kpi"><div class="kpi-label">Forecast pondéré</div><div class="kpi-value">${fmt(METRICS.total_weighted)} €</div><div class="kpi-sub">${METRICS.total_pipeline?Math.round(METRICS.total_weighted/METRICS.total_pipeline*100):0}% du pipeline</div></div>
     <div class="kpi"><div class="kpi-label">Récents (21j)</div><div class="kpi-value">${recent}</div><div class="kpi-sub">leads + deals à scorer</div></div>

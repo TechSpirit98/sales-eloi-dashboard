@@ -164,12 +164,25 @@ def fetch_leads():
     props = ["firstname","lastname","email","company","jobtitle",
              "hs_lead_status","lifecyclestage","hubspot_owner_id",
              "createdate","hs_sales_email_last_replied","phone"]
+
+    # Timestamp filters: created ≤ 90 days OR last modified ≤ 30 days
+    ts_90d = int((TODAY - __import__('datetime').timedelta(days=90)).timestamp() * 1000)
+    ts_30d = int((TODAY - __import__('datetime').timedelta(days=30)).timestamp() * 1000)
+
+    base_filters = [
+        {"propertyName": "hubspot_owner_id", "operator": "EQ",  "value": OWNER},
+        {"propertyName": "hs_lead_status",   "operator": "IN",  "values": ["NEW","IN_PROGRESS","CONNECTED"]},
+    ]
     payload = {
-        "filterGroups": [{"filters": [
-            {"propertyName": "hubspot_owner_id", "operator": "EQ", "value": OWNER},
-            {"propertyName": "hs_lead_status",   "operator": "IN",
-             "values": ["NEW","IN_PROGRESS","CONNECTED"]}
-        ]}],
+        # filterGroups = OR between groups
+        "filterGroups": [
+            {"filters": base_filters + [
+                {"propertyName": "createdate", "operator": "GTE", "value": str(ts_90d)}
+            ]},
+            {"filters": base_filters + [
+                {"propertyName": "hs_lastmodifieddate", "operator": "GTE", "value": str(ts_30d)}
+            ]},
+        ],
         "properties": props,
         "sorts": [{"propertyName": "createdate", "direction": "DESCENDING"}],
         "limit": 100
@@ -177,7 +190,7 @@ def fetch_leads():
     r = requests.post(f"{BASE}/crm/v3/objects/contacts/search", headers=headers(), json=payload)
     r.raise_for_status()
     leads = r.json().get("results", [])
-    print(f"  → {len(leads)} leads")
+    print(f"  → {len(leads)} leads (créés <90j OU modifiés <30j)")
     return leads
 
 

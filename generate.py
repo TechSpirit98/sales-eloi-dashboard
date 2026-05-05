@@ -345,35 +345,60 @@ def spiced_from_notes(note_text):
     t = note_text.lower()
     out = {}
     # S — Situation: context, org size, current tools documented
-    if any(w in t for w in ["utilisateurs", "permanents", "salariés", "collaborateurs", "effectif",
-                              "actuellement", "contexte", "solution actuelle", "outils actuels",
-                              "situation", "organisation", "organization"]):
+    if any(w in t for w in [
+            "utilisateurs", "permanents", "salariés", "collaborateurs", "effectif",
+            "actuellement", "contexte", "solution actuelle", "outils actuels",
+            "situation", "organisation", "organization",
+            # EN
+            "employees", "headcount", "staff", "team size", "currently using",
+            "current tool", "intervenants", "context:"]):
         out["S"] = True
     # P — Pain: problem or challenge explicitly named
-    if any(w in t for w in ["problème", "probleme", "problématique", "problematique",
-                              "défi", "difficulté", "manque", "fragmentation",
-                              "pain", "enjeu", "friction", "inefficacité", "besoin identifié"]):
+    if any(w in t for w in [
+            "problème", "probleme", "problématique", "problematique",
+            "défi", "difficulté", "manque", "fragmentation",
+            "pain", "enjeu", "friction", "inefficacité", "besoin identifié",
+            # EN
+            "challenge", "issue", "struggle", "overload", "scattered",
+            "too many emails", "whatsapp", "inefficient", "lack of"]):
         out["P"] = True
     # I — Impact: quantified or named gain/value
-    if any(w in t for w in ["gain", "roi", "impact", "économie", "économiser",
-                              "efficacité", "réduire", "améliorer", "metrics", "mesurable",
-                              "bénéfice", "valeur", "réduction"]):
+    if any(w in t for w in [
+            "gain", "roi", "impact", "économie", "économiser",
+            "efficacité", "réduire", "améliorer", "metrics", "mesurable",
+            "bénéfice", "valeur", "réduction",
+            # EN
+            "reduce", "saving", "improve", "efficiency", "quote", "proposal sent",
+            "submitted a quote", "good feeling", "positive feedback"]):
         out["I"] = True
     # C — Critical Event: urgency trigger or hard deadline
-    if any(w in t for w in ["avant l'été", "avant l'automne", "avant la rentrée",
-                              "impératif", "deadline", "appel d'offres", "marché public",
-                              "renouvellement", "migration forcée", "d'ici", "avant fin",
-                              "avant le ", "délai contraint", "obligation réglementaire"]):
+    if any(w in t for w in [
+            "avant l'été", "avant l'automne", "avant la rentrée",
+            "impératif", "deadline", "appel d'offres", "marché public",
+            "renouvellement", "migration forcée", "d'ici", "avant fin",
+            "avant le ", "délai contraint", "obligation réglementaire",
+            # EN
+            "by end of", "end of year", "before ", "contract end", "renewal",
+            "go-live", "launch date", "new year", "january", "april", "courant"]):
         out["C"] = True
     # E — Expected Date: timeline or horizon mentioned
-    if any(w in t for w in ["horizon", "d'ici", "avant ", "semestre", "trimestre",
-                              "q1", "q2", "q3", "q4", "pour le ", "courant", "à partir de"]):
+    if any(w in t for w in [
+            "horizon", "d'ici", "avant ", "semestre", "trimestre",
+            "q1", "q2", "q3", "q4", "pour le ", "courant", "à partir de",
+            # EN
+            "by ", "timeline", "target date", "end of", "next month", "next quarter"]):
         out["E"] = True
     # D — Decision: decision maker named or identified
-    if any(w in t for w in ["décideur", "decideur", "economic buyer", "dg ", "dsi",
-                              "directeur général", "directrice générale", "direction ",
-                              "responsable it", "responsable si", "décision finale",
-                              "validation par", "comité", "sponsor", "champion"]):
+    if any(w in t for w in [
+            "décideur", "decideur", "economic buyer", "dg ", "dsi",
+            "directeur général", "directrice générale", "direction ",
+            "responsable it", "responsable si", "décision finale",
+            "validation par", "comité", "sponsor", "champion",
+            # EN
+            "decision maker", " dm ", "dm's", "the dm", "the buyer",
+            "managing director", " md ", "md's", "ceo", "cto", "cfo",
+            "board", "committee", "sign off", "sign-off", "approver",
+            "ultimate decision", "final say", "evaluator"]):
         out["D"] = True
     return out
 

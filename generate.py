@@ -4,7 +4,7 @@ Talkspirit Sales Dashboard — Generator
 python generate.py  →  index.html
 """
 
-import requests, json, os
+import requests, json, os, re
 from datetime import datetime, timezone, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -69,6 +69,7 @@ def fetch_engagements(obj_type, obj_id):
 
         last_email = last_call = None
         best_task  = None
+        note_parts = []
 
         for item in items:
             eng   = item.get("engagement", {})
@@ -102,6 +103,11 @@ def fetch_engagements(obj_type, obj_id):
                             "overdue":  (due_dt < TODAY) if due_dt else False,
                         }
 
+            elif etype == "NOTE":
+                body = meta.get("body", "")
+                if body:
+                    note_parts.append(re.sub(r"<[^>]+>", " ", body))
+
         candidates = [x for x in [last_email, last_call] if x]
         last_touch = max(candidates, key=lambda x: x["date"]) if candidates else None
         if last_touch:
@@ -109,11 +115,12 @@ def fetch_engagements(obj_type, obj_id):
             last_touch["date"]     = last_touch["date"].strftime("%d/%m/%y")
         if best_task:
             best_task.pop("_dt", None)
-        return last_touch, best_task
+        note_text = " ".join(note_parts)
+        return last_touch, best_task, note_text
 
     except Exception as e:
         print(f"  Warning {obj_type} {obj_id}: {e}")
-        return None, None
+        return None, None, ""
 
 
 # ── Deals ─────────────────────────────────────────────────────────────────────
@@ -187,21 +194,24 @@ def enrich_deals(deals):
     contact_map = fetch_deal_contact_map(deals)
 
     def fetch_all_for_deal(deal):
-        lt, ns = fetch_engagements("DEAL", deal["id"])
+        lt, ns, notes = fetch_engagements("DEAL", deal["id"])
         for cid in contact_map.get(str(deal["id"]), []):
-            lt_c, ns_c = fetch_engagements("CONTACT", cid)
+            lt_c, ns_c, notes_c = fetch_engagements("CONTACT", cid)
             lt = _best_touch(lt, lt_c)
             if ns is None:
                 ns = ns_c
-        return lt, ns
+            if notes_c:
+                notes = (notes + " " + notes_c).strip()
+        return lt, ns, notes
 
     with ThreadPoolExecutor(max_workers=8) as ex:
         futs = {ex.submit(fetch_all_for_deal, d): d for d in deals}
         for fut in as_completed(futs):
             deal = futs[fut]
-            lt, ns = fut.result()
+            lt, ns, notes = fut.result()
             deal["last_touch"] = lt
             deal["next_step"]  = ns
+            deal["note_text"]  = notes
     return deals
 
 
@@ -247,9 +257,10 @@ def enrich_leads(leads):
         futs = {ex.submit(fetch_engagements, "CONTACT", l["id"]): l for l in leads}
         for fut in as_completed(futs):
             lead = futs[fut]
-            lt, ns = fut.result()
+            lt, ns, notes = fut.result()
             lead["last_touch"] = lt
             lead["next_step"]  = ns
+            lead["note_text"]  = notes
     return leads
 
 
@@ -329,6 +340,44 @@ def fetch_new_pipeline_mtd():
 
 
 # ── SPICED Scoring ────────────────────────────────────────────────────────────
+def spiced_from_notes(note_text):
+    """Keyword-based SPICED dimension detection from note/MEDDIC content."""
+    t = note_text.lower()
+    out = {}
+    # S — Situation: context, org size, current tools documented
+    if any(w in t for w in ["utilisateurs", "permanents", "salariés", "collaborateurs", "effectif",
+                              "actuellement", "contexte", "solution actuelle", "outils actuels",
+                              "situation", "organisation", "organization"]):
+        out["S"] = True
+    # P — Pain: problem or challenge explicitly named
+    if any(w in t for w in ["problème", "probleme", "problématique", "problematique",
+                              "défi", "difficulté", "manque", "fragmentation",
+                              "pain", "enjeu", "friction", "inefficacité", "besoin identifié"]):
+        out["P"] = True
+    # I — Impact: quantified or named gain/value
+    if any(w in t for w in ["gain", "roi", "impact", "économie", "économiser",
+                              "efficacité", "réduire", "améliorer", "metrics", "mesurable",
+                              "bénéfice", "valeur", "réduction"]):
+        out["I"] = True
+    # C — Critical Event: urgency trigger or hard deadline
+    if any(w in t for w in ["avant l'été", "avant l'automne", "avant la rentrée",
+                              "impératif", "deadline", "appel d'offres", "marché public",
+                              "renouvellement", "migration forcée", "d'ici", "avant fin",
+                              "avant le ", "délai contraint", "obligation réglementaire"]):
+        out["C"] = True
+    # E — Expected Date: timeline or horizon mentioned
+    if any(w in t for w in ["horizon", "d'ici", "avant ", "semestre", "trimestre",
+                              "q1", "q2", "q3", "q4", "pour le ", "courant", "à partir de"]):
+        out["E"] = True
+    # D — Decision: decision maker named or identified
+    if any(w in t for w in ["décideur", "decideur", "economic buyer", "dg ", "dsi",
+                              "directeur général", "directrice générale", "direction ",
+                              "responsable it", "responsable si", "décision finale",
+                              "validation par", "comité", "sponsor", "champion"]):
+        out["D"] = True
+    return out
+
+
 def spiced_deal(d):
     p         = d["properties"]
     sid       = p.get("dealstage", "")
@@ -366,6 +415,15 @@ def spiced_deal(d):
 
     D = 1 if prob >= 40 else 0
     D_w = f"Stage {prob}% — critères de décision probablement connus" if D else "Stage < 40%"
+
+    # Note-based boosts (additive — notes can only raise a score, never lower it)
+    notes = spiced_from_notes(d.get("note_text", ""))
+    if notes.get("S") and not S: S = 1; S_w = "Situation documentée dans les notes"
+    if notes.get("P") and not P: P = 1; P_w = "Pain identifié dans les notes"
+    if notes.get("I") and not I: I = 1; I_w = "Impact mentionné dans les notes"
+    if notes.get("C") and not C: C = 1; C_w = "Événement critique détecté dans les notes"
+    if notes.get("E") and not E: E = 1; E_w = "Horizon défini dans les notes"
+    if notes.get("D") and not D: D = 1; D_w = "Décideur identifié dans les notes"
 
     total = S + P + I + C + E + D
 
@@ -408,6 +466,15 @@ def spiced_lead(l):
 
     D = 1 if (lt and lt.get("days_ago", 999) <= 7) else 0
     D_w = f"Dernier touch il y a {lt['days_ago']}j" if (lt and D) else "Relation inactive (>7j)"
+
+    # Note-based boosts
+    notes = spiced_from_notes(l.get("note_text", ""))
+    if notes.get("S") and not S: S = 1; S_w = "Situation documentée dans les notes"
+    if notes.get("P") and not P: P = 1; P_w = "Pain identifié dans les notes"
+    if notes.get("I") and not I: I = 1; I_w = "Impact mentionné dans les notes"
+    if notes.get("C") and not C: C = 1; C_w = "Événement critique détecté dans les notes"
+    if notes.get("E") and not E: E = 1; E_w = "Horizon défini dans les notes"
+    if notes.get("D") and not D: D = 1; D_w = "Décideur identifié dans les notes"
 
     total = S + P + I + C + E + D
 

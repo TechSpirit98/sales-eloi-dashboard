@@ -415,14 +415,22 @@ function chip(d) {
 // ── Bowtie ────────────────────────────────────────────────────────────────────
 function renderBowtie() {
   const lc=METRICS.lead_counts, acq=METRICS.acq, exp=METRICS.exp;
-  const aO=["3112501453","3112501454","3112501455","3112501456","3112501457"];
-  const aL=["Disc. Sch.","Disc. Compl.","Sol. Fit","Proposal","Negoc."];
-  const aTips=[
-    "Discovery Schedulé — premier appel de découverte planifié avec le prospect.",
-    "Discovery Complété — les besoins et enjeux ont été cartographiés lors d'un appel.",
-    "Solution Fit validé — l'adéquation produit/besoin a été confirmée, démo réalisée.",
-    "Proposal Sent — devis ou proposition commerciale envoyé au prospect.",
-    "Négociation — conditions en cours de finalisation avant signature."
+  const acqBuckets = [
+    {
+      ids: ["3112501453","3112501454"],
+      label: "Qualification",
+      tip: "Pas encore de devis envoyé. On explore le besoin, cartographie les enjeux et vérifie l'adéquation avec Talkspirit. Le prospect est dans le cycle mais la valeur du deal n'est pas encore confirmée."
+    },
+    {
+      ids: ["3112501455"],
+      label: "Validation",
+      tip: "Le fit produit/besoin est confirmé et la démo a convaincu. On construit maintenant la proposition commerciale chiffrée."
+    },
+    {
+      ids: ["3112501456","3112501457"],
+      label: "Closing",
+      tip: "Devis envoyé ou conditions en cours de négociation. Le prospect a un chiffrage entre les mains — c'est la dernière ligne droite avant Won ou Lost."
+    }
   ];
   const eO=["462257366","462257390","462257370"];
   const eL=["Upsell Id.","Negoc. AM","Contract"];
@@ -432,12 +440,17 @@ function renderBowtie() {
     "Contract — renouvellement ou nouveau contrat en cours de signature côté Account Management."
   ];
   const ib = (t) => `<button class="info-btn" data-tip="${t}" onclick="showTip(this,event)">i</button>`;
-  const acqS = aO.map((id,i)=>{const s=acq[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${aL[i]}')"><div class="count">${s.count}</div><div class="label">${aL[i]} ${ib(aTips[i])}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
+  const acqS = acqBuckets.map(b=>{
+    const count = b.ids.reduce((s,id)=>s+(acq[id]?.count||0),0);
+    const mrr   = b.ids.reduce((s,id)=>s+(acq[id]?.mrr||0),0);
+    const key   = b.ids.join(',');
+    return `<div class="bt-stage" onclick="drillBowtie('deal','${key}','${b.label}')"><div class="count">${count}</div><div class="label">${b.label} ${ib(b.tip)}</div>${mrr?`<div class="mrr">${fmt(Math.round(mrr))}€</div>`:''}</div>`;
+  }).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
   const expS = eO.map((id,i)=>{const s=exp[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${eL[i]}')"><div class="count">${s.count}</div><div class="label">${eL[i]} ${ib(eTips[i])}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">‹</span>');
   const leadTips = {
-    NEW: "Lead entrant non encore traité. Doit être contacté sous 24h — chaque heure supplémentaire réduit le taux de conversion.",
-    IN_PROGRESS: "Lead en cours de qualification. Premier contact établi, SPICED en cours de remplissage.",
-    CONNECTED: "Lead qualifié avec contact actif. Un call ou une démo a eu lieu — le prospect est engagé dans le cycle de vente."
+    NEW: "Lead entrant non encore traité. Pas encore de deal HubSpot — doit être contacté sous 24h pour ne pas perdre le momentum.",
+    IN_PROGRESS: "Premier contact établi, qualification en cours (SPICED). Pas encore de deal créé — on évalue si ça mérite d'entrer dans le pipeline.",
+    CONNECTED: "Prospect qualifié : un échange réel a eu lieu et un deal HubSpot va être ou vient d'être créé. C'est la porte d'entrée du pipeline Acquisition."
   };
   document.getElementById('bowtie').innerHTML = `
     <div class="bt-group"><div class="bt-group-label">Leads</div><div class="bt-stages">
@@ -473,7 +486,8 @@ function drillBowtie(kind, key, label) {
   if(kind==='lead'){
     items = LEADS.filter(l=>l.status===key);
   } else {
-    items = DEALS.filter(d=>d.stage_id===key);
+    const ids = key.split(',');
+    items = DEALS.filter(d=>ids.includes(d.stage_id));
   }
 
   if(!items.length){

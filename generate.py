@@ -546,8 +546,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--slate)
 .bt-group{display:flex;flex-direction:column;gap:4px;flex:1}
 .bt-group-label{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;text-align:center;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .bt-stages{display:flex;gap:4px;flex:1}
-.bt-stage{flex:1;border-radius:var(--r-md);padding:10px 6px;text-align:center;border:1.5px solid var(--border);background:var(--cream);transition:all .15s;cursor:default}
+.bt-stage{flex:1;border-radius:var(--r-md);padding:10px 6px;text-align:center;border:1.5px solid var(--border);background:var(--cream);transition:all .15s;cursor:pointer}
 .bt-stage:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 4px 12px rgba(245,98,32,.1)}
+.bt-stage.active-drill{border-color:var(--brand);background:var(--brand-light);transform:translateY(-2px)}
+/* Bowtie drill-down panel */
+.bt-drill{margin-top:16px;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.bt-drill-header{padding:10px 16px;background:var(--cream);border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.bt-drill-title{font-size:12px;font-weight:600;color:var(--slate)}
+.bt-drill-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:0 4px}
+.bt-drill-close:hover{color:var(--slate)}
+.bt-drill table{width:100%;border-collapse:collapse}
+.bt-drill thead th{padding:7px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;background:var(--cream);border-bottom:1.5px solid var(--border)}
+.bt-drill tbody tr{border-bottom:1px solid var(--border)}
+.bt-drill tbody tr:last-child{border-bottom:none}
+.bt-drill tbody tr:hover{background:var(--cream)}
+.bt-drill td{padding:8px 14px;font-size:12px;vertical-align:middle}
 .bt-stage .count{font-size:20px;font-weight:600;color:var(--slate);letter-spacing:-.5px}
 .bt-stage .label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;line-height:1.3}
 .bt-stage .mrr{font-size:10px;font-family:'DM Mono',monospace;color:var(--brand);margin-top:4px;font-weight:500}
@@ -675,6 +689,7 @@ td{padding:10px 14px;vertical-align:middle}
   <div class="bowtie-section">
     <div class="section-title">Bowtie — Leads → Acquisition → Expansion</div>
     <div class="bowtie" id="bowtie"></div>
+    <div id="bt-drill" class="hidden"></div>
   </div>
 
   <div class="table-section">
@@ -829,16 +844,85 @@ function renderBowtie() {
   const aL=["Disc. Sch.","Disc. Compl.","Sol. Fit","Proposal","Negoc."];
   const eO=["462257366","462257390","462257370"];
   const eL=["Upsell Id.","Negoc. AM","Contract"];
-  const acqS = aO.map((id,i)=>{const s=acq[id]||{count:0,mrr:0};return `<div class="bt-stage"><div class="count">${s.count}</div><div class="label">${aL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
-  const expS = eO.map((id,i)=>{const s=exp[id]||{count:0,mrr:0};return `<div class="bt-stage"><div class="count">${s.count}</div><div class="label">${eL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">‹</span>');
+  const acqS = aO.map((id,i)=>{const s=acq[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${aL[i]}')"><div class="count">${s.count}</div><div class="label">${aL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
+  const expS = eO.map((id,i)=>{const s=exp[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${eL[i]}')"><div class="count">${s.count}</div><div class="label">${eL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">‹</span>');
   document.getElementById('bowtie').innerHTML = `
-    <div class="bt-group"><div class="bt-group-label">Leads</div><div class="bt-stages"><div class="bt-stage lead-new"><div class="count">${lc.NEW||0}</div><div class="label">NEW</div></div><div class="bt-stage lead-prog"><div class="count">${lc.IN_PROGRESS||0}</div><div class="label">IN PROG.</div></div><div class="bt-stage lead-conn"><div class="count">${lc.CONNECTED||0}</div><div class="label">CONNECTED</div></div></div></div>
+    <div class="bt-group"><div class="bt-group-label">Leads</div><div class="bt-stages">
+      <div class="bt-stage lead-new" onclick="drillBowtie('lead','NEW','New')"><div class="count">${lc.NEW||0}</div><div class="label">NEW</div></div>
+      <div class="bt-stage lead-prog" onclick="drillBowtie('lead','IN_PROGRESS','In Progress')"><div class="count">${lc.IN_PROGRESS||0}</div><div class="label">IN PROG.</div></div>
+      <div class="bt-stage lead-conn" onclick="drillBowtie('lead','CONNECTED','Connected')"><div class="count">${lc.CONNECTED||0}</div><div class="label">CONNECTED</div></div>
+    </div></div>
     <div class="bt-divider">→</div>
     <div class="bt-group"><div class="bt-group-label">Acquisition — New Biz</div><div class="bt-stages">${acqS}</div></div>
     <div class="bt-knot"><div class="bt-knot-inner"><div class="k-val">${fmt(METRICS.total_weighted)}€</div><div class="k-sub">Weighted</div></div></div>
     <div class="bt-divider">→</div>
     <div class="bt-group"><div class="bt-group-label">Expansion — AM</div><div class="bt-stages">${expS}</div></div>
   `;
+}
+
+let _drillActive = null;
+
+function drillBowtie(kind, key, label) {
+  const panel = document.getElementById('bt-drill');
+  // Toggle off if same stage clicked again
+  if(_drillActive === kind+key){
+    panel.classList.add('hidden');
+    panel.innerHTML='';
+    _drillActive=null;
+    document.querySelectorAll('.bt-stage').forEach(s=>s.classList.remove('active-drill'));
+    return;
+  }
+  _drillActive = kind+key;
+  document.querySelectorAll('.bt-stage').forEach(s=>s.classList.remove('active-drill'));
+  event.currentTarget.classList.add('active-drill');
+
+  let items=[];
+  if(kind==='lead'){
+    items = LEADS.filter(l=>l.status===key);
+  } else {
+    items = DEALS.filter(d=>d.stage_id===key);
+  }
+
+  if(!items.length){
+    panel.innerHTML=`<div class="bt-drill"><div class="bt-drill-header"><span class="bt-drill-title">${label} — aucun élément</span><button class="bt-drill-close" onclick="drillBowtie('${kind}','${key}','${label}')">×</button></div></div>`;
+    panel.classList.remove('hidden');
+    return;
+  }
+
+  const rows = items.map(x=>{
+    const lt = x.last_touch;
+    const days = lt ? lt.days_ago : 999;
+    const touchIcon = lt?(lt.channel==='email'?'📧':'📞'):'—';
+    const touchLbl = lt ? `${touchIcon} ${days<999?days+'j':''}` : '—';
+    const ns = x.next_step;
+    const nsLbl = ns ? `<span style="font-size:11px;color:var(--slate)">${ns.subject.slice(0,45)}${ns.subject.length>45?'…':''}</span>${ns.due_date?`<span style="font-size:10px;color:${ns.overdue?'var(--error)':'var(--muted)'};margin-left:4px">${ns.due_date}</span>`:''}` : '<span style="color:var(--muted);font-size:11px">—</span>';
+    const name = kind==='deal'?x.name.replace(/- New Deal|- Nouvel.+|- Nouvel élément.+/i,'').trim():x.name;
+    const sub = kind==='deal'
+      ? `<span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--brand);font-size:12px">${fmt(x.amount)}€</span>`
+      : `<span style="font-size:11px;color:var(--muted)">${x.company||x.jobtitle||''}</span>`;
+    return `<tr>
+      <td><div style="font-weight:500;color:var(--slate)">${name}</div></td>
+      <td>${sub}</td>
+      <td style="font-size:11px;color:var(--muted)">${touchLbl}<div style="font-size:10px;color:var(--muted)">${lt?lt.label.slice(0,30):''}</div></td>
+      <td>${nsLbl}</td>
+      <td><a class="hs-link" href="${x.hs_url}" target="_blank">↗</a></td>
+    </tr>`;
+  }).join('');
+
+  const totalMrr = kind==='deal' ? items.reduce((s,x)=>s+x.amount,0) : 0;
+  const mrrStr = totalMrr>0 ? ` — ${fmt(Math.round(totalMrr))}€ MRR` : '';
+
+  panel.innerHTML=`<div class="bt-drill">
+    <div class="bt-drill-header">
+      <span class="bt-drill-title">${label} — ${items.length} élément${items.length>1?'s':''}${mrrStr}</span>
+      <button class="bt-drill-close" onclick="drillBowtie('${kind}','${key}','${label}')">×</button>
+    </div>
+    <table><thead><tr>
+      <th>Nom</th><th>${kind==='deal'?'MRR':'Entreprise'}</th><th>Dernier touch</th><th>Next step</th><th></th>
+    </tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // ── View switch ───────────────────────────────────────────────────────────────

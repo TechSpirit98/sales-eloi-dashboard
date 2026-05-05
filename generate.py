@@ -5,12 +5,13 @@ python generate.py  →  index.html
 """
 
 import requests, json, os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 TOKEN = os.environ.get("HUBSPOT_TOKEN", "")
 OWNER = "33612016"
+MONTHLY_QUOTA = 1000  # €/mois MRR — objectif new biz mensuel (à ajuster)
 TODAY = datetime.now(timezone.utc)
 BASE  = "https://api.hubapi.com"
 OUT   = Path(__file__).parent / "index.html"
@@ -146,10 +147,56 @@ def fetch_deals():
     return deals
 
 
+def fetch_deal_contact_map(deals):
+    """Returns {deal_id: [contact_id, ...]} via batch associations API."""
+    if not deals:
+        return {}
+    contact_map = {}
+    for i in range(0, len(deals), 100):
+        chunk = [{"id": d["id"]} for d in deals[i:i+100]]
+        try:
+            r = requests.post(
+                f"{BASE}/crm/v4/associations/deals/contacts/batch/read",
+                headers=headers(),
+                json={"inputs": chunk}
+            )
+            if r.status_code not in (200, 207):
+                continue
+            for result in r.json().get("results", []):
+                deal_id = str(result["from"]["id"])
+                contact_ids = [str(t["toObjectId"]) for t in result.get("to", [])]
+                if contact_ids:
+                    contact_map[deal_id] = contact_ids
+        except Exception as e:
+            print(f"  Warning fetch_deal_contact_map: {e}")
+    n_contacts = sum(len(v) for v in contact_map.values())
+    print(f"  → {n_contacts} contacts associés à {len(contact_map)} deals")
+    return contact_map
+
+
+def _best_touch(lt1, lt2):
+    """Return the most recent last_touch (smaller days_ago = more recent)."""
+    if lt1 is None: return lt2
+    if lt2 is None: return lt1
+    return lt1 if lt1["days_ago"] <= lt2["days_ago"] else lt2
+
+
 def enrich_deals(deals):
     print(f"Enriching {len(deals)} deals...")
-    with ThreadPoolExecutor(max_workers=10) as ex:
-        futs = {ex.submit(fetch_engagements, "DEAL", d["id"]): d for d in deals}
+    # Also check engagements on associated contacts (emails often logged there)
+    contact_map = fetch_deal_contact_map(deals)
+
+    def fetch_all_for_deal(deal):
+        lt, ns = fetch_engagements("DEAL", deal["id"])
+        for cid in contact_map.get(str(deal["id"]), []):
+            lt_c, ns_c = fetch_engagements("CONTACT", cid)
+            lt = _best_touch(lt, lt_c)
+            if ns is None:
+                ns = ns_c
+        return lt, ns
+
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        futs = {ex.submit(fetch_all_for_deal, d): d for d in deals}
         for fut in as_completed(futs):
             deal = futs[fut]
             lt, ns = fut.result()
@@ -232,6 +279,53 @@ def filter_leads_without_deals(leads):
     filtered = [l for l in leads if l["id"] not in contacts_with_deals]
     print(f"  → {len(filtered)} leads after dedup (removed {before - len(filtered)} contacts already in a deal)")
     return filtered
+
+
+# ── WbD KPIs ─────────────────────────────────────────────────────────────────
+def fetch_win_rate():
+    cutoff_ms = int((TODAY - timedelta(days=90)).timestamp() * 1000)
+    payload = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "hubspot_owner_id", "operator": "EQ",  "value": OWNER},
+            {"propertyName": "dealstage",        "operator": "IN",  "values": ["3112501458", "3112501459"]},
+            {"propertyName": "closedate",        "operator": "GTE", "value": str(cutoff_ms)}
+        ]}],
+        "properties": ["dealstage", "amount"],
+        "limit": 100
+    }
+    r = requests.post(f"{BASE}/crm/v3/objects/deals/search", headers=headers(), json=payload)
+    if r.status_code != 200:
+        return {"won": 0, "lost": 0, "rate": None, "total": 0}
+    results = r.json().get("results", [])
+    won   = sum(1 for d in results if d["properties"]["dealstage"] == "3112501458")
+    lost  = sum(1 for d in results if d["properties"]["dealstage"] == "3112501459")
+    total = won + lost
+    rate  = round(won / total * 100) if total else None
+    print(f"  Win Rate 90j: {won}W / {lost}L → {rate}%")
+    return {"won": won, "lost": lost, "rate": rate, "total": total}
+
+
+def fetch_new_pipeline_mtd():
+    first_of_month = TODAY.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    cutoff_ms = int(first_of_month.timestamp() * 1000)
+    won_lost = {"3112501458","3112501459","462257371","462257372","5134323932","5134323933","5137691842"}
+    payload = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "hubspot_owner_id", "operator": "EQ",  "value": OWNER},
+            {"propertyName": "deal_archived",    "operator": "NEQ", "value": "true"},
+            {"propertyName": "createdate",       "operator": "GTE", "value": str(cutoff_ms)}
+        ]}],
+        "properties": ["dealstage", "amount"],
+        "limit": 100
+    }
+    r = requests.post(f"{BASE}/crm/v3/objects/deals/search", headers=headers(), json=payload)
+    if r.status_code != 200:
+        return {"mrr": 0, "count": 0}
+    results = r.json().get("results", [])
+    active = [d for d in results if d["properties"]["dealstage"] not in won_lost]
+    mrr    = sum(float(d["properties"].get("amount") or 0) for d in active)
+    print(f"  New Pipeline MTD: {len(active)} deals · {round(mrr)}€ MRR")
+    return {"mrr": round(mrr), "count": len(active)}
 
 
 # ── SPICED Scoring ────────────────────────────────────────────────────────────
@@ -536,7 +630,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--slate)
 .topbar-meta{font-size:11px;color:#B09080;font-family:'DM Mono',monospace}
 .container{max-width:1500px;margin:0 auto;padding:24px 28px}
 /* KPIs */
-.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
 .kpi{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:18px 20px}
 .kpi-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
 .kpi-value{font-size:24px;font-weight:600;color:var(--slate);letter-spacing:-.5px}
@@ -825,19 +919,40 @@ function renderKPIs() {
   const fire  = METRICS.alerts.fire.length;
   const noDec = METRICS.alerts.no_decision.length;
   const urg   = fire + noDec;
-  const recent = [...DEALS,...LEADS].filter(x=>x.days_open<=21).length;
   const lc = METRICS.lead_counts;
   const newCount = lc.NEW || 0;
-  const reactivityPct = newCount === 0 ? 100 : Math.round((1 - newCount / METRICS.total_leads) * 100);
   const reactivityLabel = newCount === 0 ? '100% inbounds traités' : `${newCount} en attente`;
   const reactivityColor = newCount === 0 ? 'var(--success)' : 'var(--warning)';
+
+  // Win Rate 90j
+  const wr = METRICS.win_rate || {};
+  const wrRate = (wr.rate !== null && wr.rate !== undefined) ? wr.rate : null;
+  const wrColor = wrRate === null ? 'var(--muted)' : wrRate >= 50 ? 'var(--success)' : wrRate >= 30 ? 'var(--warning)' : 'var(--error)';
+  const wrVal = wrRate !== null ? wrRate + '%' : '—';
+  const wrSub = wr.total ? `${wr.won} Won · ${wr.lost} Lost sur 90j` : 'Aucun deal clôturé (90j)';
+
+  // Pipeline Coverage
+  const quota = METRICS.monthly_quota || 1000;
+  const pipe  = METRICS.total_pipeline || 0;
+  const cov   = pipe / quota;
+  const covStr   = cov.toFixed(1) + '×';
+  const covColor = cov >= 3 ? 'var(--success)' : cov >= 2 ? 'var(--warning)' : 'var(--error)';
+
+  // New Pipeline MTD
+  const npm    = METRICS.new_pipe_mtd || {};
+  const npmMrr = npm.mrr || 0;
+  const npmCnt = npm.count || 0;
+  const npmPct = quota > 0 ? Math.round(npmMrr / quota * 100) : 0;
+
   document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Win Rate (90j)</div><div class="kpi-value" style="color:${wrColor}">${wrVal}</div><div class="kpi-sub">${wrSub}</div></div>
+    <div class="kpi"><div class="kpi-label">Pipeline Coverage</div><div class="kpi-value" style="color:${covColor}">${covStr}</div><div class="kpi-sub">vs quota ${fmt(quota)} €/m · cible ≥3×</div></div>
+    <div class="kpi"><div class="kpi-label">New Pipeline MTD</div><div class="kpi-value">${fmt(npmMrr)} €</div><div class="kpi-sub">${npmCnt} deal${npmCnt>1?'s':''} créés ce mois · ${npmPct}% quota</div></div>
+    <div class="kpi"><div class="kpi-label">Urgences</div><div class="kpi-value ${urg>0?'brand':''}">${urg}</div><div class="kpi-sub">${fire} inactifs >14j · ${noDec} No Decision</div></div>
     <div class="kpi"><div class="kpi-label">Leads actifs</div><div class="kpi-value brand">${METRICS.total_leads}</div><div class="kpi-sub">NEW · IN_PROGRESS · CONNECTED</div></div>
     <div class="kpi"><div class="kpi-label">Réactivité inbound</div><div class="kpi-value" style="color:${reactivityColor}">${newCount === 0 ? '✓ 0' : newCount} NEW</div><div class="kpi-sub">${reactivityLabel}</div></div>
     <div class="kpi"><div class="kpi-label">Pipeline MRR</div><div class="kpi-value">${fmt(METRICS.total_pipeline)} €</div><div class="kpi-sub">/mois brut deals actifs</div></div>
     <div class="kpi"><div class="kpi-label">Forecast pondéré</div><div class="kpi-value">${fmt(METRICS.total_weighted)} €</div><div class="kpi-sub">${METRICS.total_pipeline?Math.round(METRICS.total_weighted/METRICS.total_pipeline*100):0}% du pipeline</div></div>
-    <div class="kpi"><div class="kpi-label">Récents (21j)</div><div class="kpi-value">${recent}</div><div class="kpi-sub">leads + deals à scorer</div></div>
-    <div class="kpi"><div class="kpi-label">Urgences</div><div class="kpi-value ${urg>0?'brand':''}">${urg}</div><div class="kpi-sub">${fire} inactifs >14j · ${noDec} No Decision</div></div>
   `;
 }
 
@@ -1174,7 +1289,14 @@ def main():
     deals  = enrich_deals(deals)
     leads  = enrich_leads(leads)
 
+    win_rate     = fetch_win_rate()
+    new_pipe_mtd = fetch_new_pipeline_mtd()
+
     metrics = compute_metrics(deals, leads)
+    metrics["win_rate"]      = win_rate
+    metrics["new_pipe_mtd"]  = new_pipe_mtd
+    metrics["monthly_quota"] = MONTHLY_QUOTA
+
     d_rows  = serialise_deals(deals)
     l_rows  = serialise_leads(leads)
 

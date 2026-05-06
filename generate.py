@@ -11,7 +11,7 @@ from pathlib import Path
 
 TOKEN = os.environ.get("HUBSPOT_TOKEN", "")
 OWNER = "33612016"
-MONTHLY_QUOTA = 1000  # €/mois MRR — objectif new biz mensuel (à ajuster)
+MONTHLY_QUOTA = 4000  # €/mois MRR — objectif new biz mensuel (à ajuster)
 TODAY = datetime.now(timezone.utc)
 BASE  = "https://api.hubapi.com"
 OUT   = Path(__file__).parent / "index.html"
@@ -837,6 +837,10 @@ td{padding:10px 14px;vertical-align:middle}
 /* Tooltip */
 .sd[data-tip]{position:relative}
 .sd[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--slate);color:white;font-size:10px;font-weight:400;white-space:nowrap;padding:4px 8px;border-radius:6px;z-index:999;pointer-events:none;max-width:220px;white-space:normal;text-align:center;line-height:1.4}
+/* Info button & tooltip */
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:var(--border);color:var(--muted);font-size:8px;font-weight:700;cursor:pointer;border:none;line-height:1;font-family:'DM Mono',monospace;vertical-align:middle;margin-left:4px;flex-shrink:0;transition:background .15s,color .15s}
+.info-btn:hover{background:var(--muted);color:white}
+.tip-popup{position:fixed;background:var(--slate);color:#fff;padding:9px 13px;border-radius:var(--r-md);font-size:11px;line-height:1.55;max-width:240px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.25);display:none;pointer-events:none;font-family:'DM Sans',sans-serif}
 /* Hot score */
 .hot-wrap{display:flex;flex-direction:column;gap:4px;min-width:100px}
 .hot-bar-outer{background:var(--border);border-radius:4px;height:5px;width:100%;overflow:hidden}
@@ -1027,6 +1031,29 @@ const fireIds = new Set(
   (METRICS.alerts.fire||[]).concat(METRICS.alerts.no_decision||[]).map(d=>d.id)
 );
 
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+(function(){
+  const tip = document.createElement('div');
+  tip.id = 'tip-popup'; tip.className = 'tip-popup';
+  document.body.appendChild(tip);
+  document.addEventListener('click', function(){ tip.style.display='none'; tip._owner=null; });
+})();
+function showTip(el, e) {
+  e.stopPropagation();
+  const tip = document.getElementById('tip-popup');
+  if (tip._owner === el && tip.style.display === 'block') { tip.style.display='none'; tip._owner=null; return; }
+  tip.innerHTML = el.dataset.tip;
+  tip.style.display = 'block';
+  tip._owner = el;
+  const r = el.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left = r.left + r.width/2 - tw/2;
+  let top  = r.top - th - 8;
+  if (top < 8) top = r.bottom + 8;
+  tip.style.left = Math.max(8, Math.min(left, window.innerWidth - tw - 8)) + 'px';
+  tip.style.top  = top + 'px';
+}
+
 // ── KPIs ──────────────────────────────────────────────────────────────────────
 function renderKPIs() {
   const fire  = METRICS.alerts.fire.length;
@@ -1057,23 +1084,26 @@ function renderKPIs() {
   const npmCnt = npm.count || 0;
   const npmPct = quota > 0 ? Math.round(npmMrr / quota * 100) : 0;
 
+  const ib = (t) => `<button class="info-btn" data-tip="${t}" onclick="showTip(this,event)">i</button>`;
   document.getElementById('kpi-row').innerHTML = `
-    <div class="kpi"><div class="kpi-label">Win Rate (90j)</div><div class="kpi-value" style="color:${wrColor}">${wrVal}</div><div class="kpi-sub">${wrSub}</div></div>
-    <div class="kpi"><div class="kpi-label">Pipeline Coverage</div><div class="kpi-value" style="color:${covColor}">${covStr}</div><div class="kpi-sub">vs quota ${fmt(quota)} €/m · cible ≥3×</div></div>
-    <div class="kpi"><div class="kpi-label">New Pipeline MTD</div><div class="kpi-value">${fmt(npmMrr)} €</div><div class="kpi-sub">${npmCnt} deal${npmCnt>1?'s':''} créés ce mois · ${npmPct}% quota</div></div>
-    <div class="kpi"><div class="kpi-label">Urgences</div><div class="kpi-value ${urg>0?'brand':''}">${urg}</div><div class="kpi-sub">${fire} inactifs >14j · ${noDec} No Decision</div></div>
-    <div class="kpi"><div class="kpi-label">Leads actifs</div><div class="kpi-value brand">${METRICS.total_leads}</div><div class="kpi-sub">NEW · IN_PROGRESS · CONNECTED</div></div>
-    <div class="kpi"><div class="kpi-label">Réactivité inbound</div><div class="kpi-value" style="color:${reactivityColor}">${newCount === 0 ? '✓ 0' : newCount} NEW</div><div class="kpi-sub">${reactivityLabel}</div></div>
-    <div class="kpi"><div class="kpi-label">Pipeline MRR</div><div class="kpi-value">${fmt(METRICS.total_pipeline)} €</div><div class="kpi-sub">/mois brut deals actifs</div></div>
-    <div class="kpi"><div class="kpi-label">Forecast pondéré</div><div class="kpi-value">${fmt(METRICS.total_weighted)} €</div><div class="kpi-sub">${METRICS.total_pipeline?Math.round(METRICS.total_weighted/METRICS.total_pipeline*100):0}% du pipeline</div></div>
+    <div class="kpi"><div class="kpi-label">Win Rate (90j) ${ib('% de deals Won parmi tous les deals clôturés (Won + Lost) sur les 90 derniers jours. Cible &gt; 30%.')}</div><div class="kpi-value" style="color:${wrColor}">${wrVal}</div><div class="kpi-sub">${wrSub}</div></div>
+    <div class="kpi"><div class="kpi-label">Pipeline Coverage ${ib('Rapport entre le pipeline total et le quota mensuel. Un ratio &ge;3× signifie que le pipeline est assez large pour atteindre l\'objectif malgré les pertes.')}</div><div class="kpi-value" style="color:${covColor}">${covStr}</div><div class="kpi-sub">vs quota ${fmt(quota)} €/m · cible ≥3×</div></div>
+    <div class="kpi"><div class="kpi-label">New Pipeline MTD ${ib('Valeur MRR des nouveaux deals créés depuis le 1er du mois (Month To Date). Mesure la génération de pipeline — indépendante des closings.')}</div><div class="kpi-value">${fmt(npmMrr)} €</div><div class="kpi-sub">${npmCnt} deal${npmCnt>1?'s':''} créés ce mois · ${npmPct}% quota</div></div>
+    <div class="kpi"><div class="kpi-label">Urgences ${ib('Deals qui demandent une action immédiate : inactifs &gt;14j (aucun touch récent) + deals bloqués en No Decision sans relance planifiée.')}</div><div class="kpi-value ${urg>0?'brand':''}">${urg}</div><div class="kpi-sub">${fire} inactifs >14j · ${noDec} No Decision</div></div>
+    <div class="kpi"><div class="kpi-label">Leads actifs ${ib('Nombre de leads en cours de qualification dans le bowtie : NEW (entrants), IN_PROGRESS (en qualification) et CONNECTED (contact établi).')}</div><div class="kpi-value brand">${METRICS.total_leads}</div><div class="kpi-sub">NEW · IN_PROGRESS · CONNECTED</div></div>
+    <div class="kpi"><div class="kpi-label">Réactivité inbound ${ib('Leads entrants (statut NEW) non encore traités. Objectif : 0 en fin de journée. Chaque lead non contacté sous 24h réduit le taux de conversion.')}</div><div class="kpi-value" style="color:${reactivityColor}">${newCount === 0 ? '✓ 0' : newCount} NEW</div><div class="kpi-sub">${reactivityLabel}</div></div>
+    <div class="kpi"><div class="kpi-label">Pipeline MRR ${ib('Somme brute des MRR de tous les deals actifs, sans pondération par la probabilité de closing. Représente le potentiel maximum si tout était gagné.')}</div><div class="kpi-value">${fmt(METRICS.total_pipeline)} €</div><div class="kpi-sub">/mois brut deals actifs</div></div>
+    <div class="kpi"><div class="kpi-label">Forecast pondéré ${ib('Pipeline MRR × probabilité de closing par stage. Estimation statistique du revenu attendu — plus fiable que le pipeline brut pour le forecast.')}</div><div class="kpi-value">${fmt(METRICS.total_weighted)} €</div><div class="kpi-sub">${METRICS.total_pipeline?Math.round(METRICS.total_weighted/METRICS.total_pipeline*100):0}% du pipeline</div></div>
   `;
 }
 
 // ── Alerts ────────────────────────────────────────────────────────────────────
 function renderAlerts() {
   const {fire,warn,no_step,no_decision} = METRICS.alerts;
+  const proposalGhost = DEALS.filter(d => d.stage_id === "3112501456" && (!d.last_touch || d.last_touch.days_ago > 5));
   const rows = [];
   if (fire.length) rows.push(`<div class="alert-row fire"><span class="alert-title">🔴 Inactifs >14j</span><div class="alert-chips">${fire.map(chip).join('')}</div></div>`);
+  if (proposalGhost.length) rows.push(`<div class="alert-row fire"><span class="alert-title">👻 Devis sans réponse >5j</span><div class="alert-chips">${proposalGhost.map(chip).join('')}</div></div>`);
   if (warn.length) rows.push(`<div class="alert-row warn"><span class="alert-title">🟡 Inactifs 7–14j</span><div class="alert-chips">${warn.map(chip).join('')}</div></div>`);
   if (no_decision.length) rows.push(`<div class="alert-row fire"><span class="alert-title">⚠️ No Decision</span><div class="alert-chips">${no_decision.map(chip).join('')}</div></div>`);
   if (no_step.length) rows.push(`<div class="alert-row info"><span class="alert-title">📋 Sans next step</span><div class="alert-chips">${no_step.map(chip).join('')}</div></div>`);
@@ -1087,17 +1117,28 @@ function chip(d) {
 // ── Bowtie ────────────────────────────────────────────────────────────────────
 function renderBowtie() {
   const lc=METRICS.lead_counts, acq=METRICS.acq, exp=METRICS.exp;
-  const aO=["3112501453","3112501454","3112501455","3112501456","3112501457"];
-  const aL=["Disc. Sch.","Disc. Compl.","Sol. Fit","Proposal","Negoc."];
+  const acqBuckets = [
+    {ids:["3112501453","3112501454"],label:"Call booké",tip:"Le lead a réservé un créneau suite à l'email d'accueil. Le call de découverte est planifié ou vient de se tenir — point d'entrée du pipeline New Biz."},
+    {ids:["3112501455"],label:"Fit confirmé",tip:"Le call a eu lieu et l'adéquation Talkspirit/besoin est validée. Prochaine étape : préparer la proposition ET booker un second call pour la présenter — ne jamais envoyer le devis sans appel."},
+    {ids:["3112501456","3112501457"],label:"Proposal",tip:"Devis envoyé ou en négociation. Point de friction : les prospects ghostent ici. Si aucune activité >5j → relancer avec un lien calendrier, pas un email de suivi."}
+  ];
   const eO=["462257366","462257390","462257370"];
   const eL=["Upsell Id.","Negoc. AM","Contract"];
-  const acqS = aO.map((id,i)=>{const s=acq[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${aL[i]}')"><div class="count">${s.count}</div><div class="label">${aL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
-  const expS = eO.map((id,i)=>{const s=exp[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${eL[i]}')"><div class="count">${s.count}</div><div class="label">${eL[i]}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">‹</span>');
+  const eTips=["Upsell Identifié — opportunité d'expansion détectée sur un compte existant (nouvelles licences, modules, add-ons).","Négociation AM — conditions d'upsell ou renouvellement en cours de finalisation avec le client.","Contract — renouvellement ou nouveau contrat en cours de signature côté Account Management."];
+  const leadTips={NEW:"Lead entrant non encore traité. Pas encore de deal HubSpot — doit être contacté sous 24h pour ne pas perdre le momentum.",IN_PROGRESS:"Premier contact établi, qualification en cours (SPICED). Pas encore de deal créé — on évalue si ça mérite d'entrer dans le pipeline.",CONNECTED:"Prospect qualifié : un échange réel a eu lieu et un deal HubSpot va être ou vient d'être créé. C'est la porte d'entrée du pipeline Acquisition."};
+  const ib = (t) => `<button class="info-btn" data-tip="${t}" onclick="showTip(this,event)">i</button>`;
+  const acqS = acqBuckets.map(b=>{
+    const count=b.ids.reduce((s,id)=>s+(acq[id]?.count||0),0);
+    const mrr=b.ids.reduce((s,id)=>s+(acq[id]?.mrr||0),0);
+    const key=b.ids.join(',');
+    return `<div class="bt-stage" onclick="drillBowtie('deal','${key}','${b.label}')"><div class="count">${count}</div><div class="label">${b.label} ${ib(b.tip)}</div>${mrr?`<div class="mrr">${fmt(Math.round(mrr))}€</div>`:''}</div>`;
+  }).join('<span style="align-self:center;color:var(--border);padding-top:28px">›</span>');
+  const expS = eO.map((id,i)=>{const s=exp[id]||{count:0,mrr:0};return `<div class="bt-stage" onclick="drillBowtie('deal','${id}','${eL[i]}')"><div class="count">${s.count}</div><div class="label">${eL[i]} ${ib(eTips[i])}</div>${s.mrr?`<div class="mrr">${fmt(Math.round(s.mrr))}€</div>`:''}</div>`;}).join('<span style="align-self:center;color:var(--border);padding-top:28px">‹</span>');
   document.getElementById('bowtie').innerHTML = `
     <div class="bt-group"><div class="bt-group-label">Leads</div><div class="bt-stages">
-      <div class="bt-stage lead-new" onclick="drillBowtie('lead','NEW','New')"><div class="count">${lc.NEW||0}</div><div class="label">NEW</div></div>
-      <div class="bt-stage lead-prog" onclick="drillBowtie('lead','IN_PROGRESS','In Progress')"><div class="count">${lc.IN_PROGRESS||0}</div><div class="label">IN PROG.</div></div>
-      <div class="bt-stage lead-conn" onclick="drillBowtie('lead','CONNECTED','Connected')"><div class="count">${lc.CONNECTED||0}</div><div class="label">CONNECTED</div></div>
+      <div class="bt-stage lead-new" onclick="drillBowtie('lead','NEW','New')"><div class="count">${lc.NEW||0}</div><div class="label">NEW ${ib(leadTips.NEW)}</div></div>
+      <div class="bt-stage lead-prog" onclick="drillBowtie('lead','IN_PROGRESS','In Progress')"><div class="count">${lc.IN_PROGRESS||0}</div><div class="label">IN PROG. ${ib(leadTips.IN_PROGRESS)}</div></div>
+      <div class="bt-stage lead-conn" onclick="drillBowtie('lead','CONNECTED','Connected')"><div class="count">${lc.CONNECTED||0}</div><div class="label">CONNECTED ${ib(leadTips.CONNECTED)}</div></div>
     </div></div>
     <div class="bt-divider">→</div>
     <div class="bt-group"><div class="bt-group-label">Acquisition — New Biz</div><div class="bt-stages">${acqS}</div></div>
@@ -1127,7 +1168,8 @@ function drillBowtie(kind, key, label) {
   if(kind==='lead'){
     items = LEADS.filter(l=>l.status===key);
   } else {
-    items = DEALS.filter(d=>d.stage_id===key);
+    const ids = key.split(',');
+    items = DEALS.filter(d=>ids.includes(d.stage_id));
   }
 
   if(!items.length){

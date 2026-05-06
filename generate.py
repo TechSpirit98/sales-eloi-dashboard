@@ -264,6 +264,47 @@ def enrich_leads(leads):
     return leads
 
 
+def dedup_leads_by_company(leads):
+    """Keep only the most influential contact per company to avoid duplicates."""
+    SENIOR_KW = ["ceo","coo","cto","cfo","founder","président","president","dg ","dsi","daf","drh",
+                 "directeur","director","head of","responsable","manager","chef de","vp ","vice-"]
+
+    def influence(lead):
+        title = (lead.get("properties", {}).get("jobtitle") or "").lower()
+        for i, kw in enumerate(SENIOR_KW):
+            if kw in title:
+                return len(SENIOR_KW) - i
+        # Fallback: prefer most recently modified
+        return 0
+
+    from collections import defaultdict
+    by_company = defaultdict(list)
+    no_company = []
+    for lead in leads:
+        company = (lead.get("properties", {}).get("company") or "").strip().lower()
+        if company:
+            by_company[company].append(lead)
+        else:
+            no_company.append(lead)
+
+    result = no_company[:]
+    removed = 0
+    for company, group in by_company.items():
+        if len(group) == 1:
+            result.append(group[0])
+        else:
+            best = max(group, key=lambda l: (
+                influence(l),
+                l.get("properties", {}).get("lastmodifieddate") or ""
+            ))
+            result.append(best)
+            removed += len(group) - 1
+
+    if removed:
+        print(f"  → {len(result)} leads after company dedup (removed {removed} same-company duplicate{'s' if removed > 1 else ''})")
+    return result
+
+
 def filter_leads_without_deals(leads):
     """Returns only leads that have NO associated deal in HubSpot — avoids lead/deal duplicates.
     Checks directly from the contact side so it works regardless of which deals we fetched."""
@@ -1492,6 +1533,7 @@ def main():
     deals  = fetch_deals()
     leads  = fetch_leads()
     leads  = filter_leads_without_deals(leads)
+    leads  = dedup_leads_by_company(leads)
     deals  = enrich_deals(deals)
     leads  = enrich_leads(leads)
 
